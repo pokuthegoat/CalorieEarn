@@ -255,9 +255,6 @@ function logging(t) {
   // camera view
   ctx.fillStyle = '#020302';
   ctx.fillRect(0, 0, W, H);
-  const g = ctx.createRadialGradient(W / 2, 520, 40, W / 2, 520, 520);
-  g.addColorStop(0, 'rgba(60,90,50,.35)'); g.addColorStop(1, 'rgba(0,0,0,0)');
-  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
   header('Scan barcode', 'Point at the package');
   // package with a barcode label
   const px = 100, py = 300, pw = W - 200, ph = 470;
@@ -411,9 +408,10 @@ function privacy(t) {
 const logo = new Image();
 logo.src = 'assets/logo.jpg';
 function final(t) {
-  // lock screen: soft brand glow, big clock, then a check-in reminder slides down
-  const g = ctx.createRadialGradient(W / 2, H * 0.72, 40, W / 2, H * 0.72, H * 0.6);
-  g.addColorStop(0, 'rgba(177,245,140,.32)'); g.addColorStop(0.5, 'rgba(46,160,70,.12)'); g.addColorStop(1, 'rgba(0,0,0,0)');
+  // lock screen: big clock, then a check-in reminder slides down
+  // flat wallpaper: a plain dark-green diagonal, no light effects
+  const g = ctx.createLinearGradient(0, 0, W, H);
+  g.addColorStop(0, '#0b1a0c'); g.addColorStop(1, '#030503');
   ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
   lock(W / 2, 150, 34, 'rgba(246,248,244,.85)');
   text('9:41', W / 2, 330, 150, C.text, 500, 'center');

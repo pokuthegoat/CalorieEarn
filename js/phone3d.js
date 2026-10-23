@@ -7,7 +7,6 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
 
 const canvas = document.getElementById('stage');
-const glow = document.getElementById('phoneGlow');
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 let renderer;
@@ -34,8 +33,8 @@ camera.position.set(0, 0, 6);
 const key = new THREE.DirectionalLight(0xffffff, 1.4);
 key.position.set(3, 4, 5);
 scene.add(key);
-// Green rim from behind so the frame picks up the brand glow against the black page.
-const rim = new THREE.DirectionalLight(0xb1f58c, 3);
+// Neutral rim from behind so the frame's edge separates from the dark page (no coloured light).
+const rim = new THREE.DirectionalLight(0xffffff, 1.6);
 rim.position.set(-4, 2, -3);
 scene.add(rim);
 
@@ -238,8 +237,6 @@ function updatePath(dt) {
   const R = view.h * AWAY_RAMP, d = s - lastAt;
   const away = (d <= -R / 2 ? 0 : d < R / 2 ? (d + R / 2) ** 2 / (2 * R) : d) / view.h;
   anchor.position.set(cur.x * view.visW, (cur.y + away) * view.visH, 0);
-  // the soft light on the page follows the phone (transform only)
-  glow.style.transform = `translate3d(${((0.5 + cur.x) * view.w).toFixed(1)}px,${(view.h / 2 - (cur.y + away) * view.h).toFixed(1)}px,0) scale(${cur.s.toFixed(3)})`;
   if (PATH_DEBUG) window.__phoneY = view.h / 2 - (cur.y + away) * view.h; // phone centre on screen, px from top
   anchor.scale.setScalar(cur.s);
   anchor.rotation.set(cur.rx, cur.ry, cur.rz + cur.bank);
@@ -298,7 +295,7 @@ loader.load('assets/phone.glb', (gltf) => {
   // tell the intro we're ready; the phone fades in when the intro has finished
   window.__phoneReady = true;
   dispatchEvent(new Event('phone:ready'));
-  const show = () => { canvas.classList.add('is-in'); glow.classList.add('is-in'); };
+  const show = () => canvas.classList.add('is-in');
   if (window.__introDone) show(); else addEventListener('intro:done', show, { once: true });
 }, (e) => {
   if (e.total) dispatchEvent(new CustomEvent('phone:progress', { detail: e.loaded / e.total }));
