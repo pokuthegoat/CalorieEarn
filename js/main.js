@@ -145,20 +145,20 @@
   const steps = [...loopEl.querySelectorAll('li')];
   const nums = steps.map(li => li.querySelector('.n'));
   window.__how = { p: 0, step: 0 }; // read by the phone screen visuals
-  // Soft pin: instead of freezing the instant the section pins, the content keeps drifting up and slows to a
-  // stop over EASE_IN of scroll, then speeds back up over the last EASE_IN before the section lets go. It sits
-  // R/2 low beforehand so it's centred while held. Speed is continuous at both ends (no hard stop).
+  // Soft pin: instead of freezing the instant the section pins, the content keeps gliding up and slows to a
+  // stop over EASE_IN of scroll (speed eases from page speed to 0, landing with no jolt), then speeds back up the
+  // same way over the last EASE_IN before the section lets go. It sits R/3 low beforehand so it's centred while held.
   const howContent = how.querySelector('.how-pin > .wrap');
-  const EASE_IN = 0.4; // share of the screen height
+  const EASE_IN = 0.9; // share of the screen height
   function softPin(d, L) {
     const R = Math.min(innerHeight * EASE_IN, L / 2);
     let f;
     if (d <= 0) f = 0;
-    else if (d < R) f = -(d - (d * d) / (2 * R));
-    else if (d <= L - R) f = -R / 2;
-    else if (d < L) { const e = d - (L - R); f = -R / 2 - (e * e) / (2 * R); }
-    else f = -R;
-    return f + R / 2;
+    else if (d < R) f = -(R / 3) * (1 - (1 - d / R) ** 3);
+    else if (d <= L - R) f = -R / 3;
+    else if (d < L) f = -R / 3 - (R / 3) * ((d - (L - R)) / R) ** 3;
+    else f = -2 * R / 3;
+    return f + R / 3;
   }
   function updateHow() {
     const r = how.getBoundingClientRect();

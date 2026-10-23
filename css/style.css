@@ -17,7 +17,8 @@
 }
 
 *{box-sizing:border-box;margin:0;padding:0}
-html{background:var(--bg);-webkit-text-size-adjust:100%;overflow-x:clip}
+/* scrollbar space is always reserved, so the page doesn't shift sideways when the intro unlocks scrolling */
+html{background:var(--bg);-webkit-text-size-adjust:100%;overflow-x:clip;scrollbar-gutter:stable}
 body{background:var(--bg);color:var(--text);font-family:"DM Sans",system-ui,sans-serif;font-weight:300;-webkit-font-smoothing:antialiased;overflow-x:clip}
 img,svg{display:block}
 a{color:inherit}
@@ -133,12 +134,12 @@ main,.foot{position:relative;z-index:1}
 /* ==========================================================
    HERO
    ========================================================== */
-.hero{position:relative;min-height:100vh;min-height:100svh;display:flex;align-items:center;padding:calc(var(--nav-h) + 40px) 0 80px;overflow:hidden}
-.hero::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:
-  radial-gradient(55% 65% at 78% 45%,rgba(177,245,140,.14),transparent 62%),
-  radial-gradient(45% 55% at 95% 100%,rgba(46,160,70,.30),transparent 70%),
-  radial-gradient(40% 40% at 0% 0%,rgba(46,160,70,.10),transparent 70%)}
-.hero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:220px;z-index:-1;background:linear-gradient(to bottom,transparent,var(--bg))}
+/* no overflow clip: the hero's light continues past its bottom edge and fades out into How it works */
+.hero{position:relative;min-height:100vh;min-height:100svh;display:flex;align-items:center;padding:calc(var(--nav-h) + 40px) 0 80px}
+.hero::before{content:"";position:absolute;inset:0 0 -60vh;z-index:-1;pointer-events:none;-webkit-mask-image:linear-gradient(#000 45%,transparent);mask-image:linear-gradient(#000 45%,transparent);background:
+  radial-gradient(55% 41% at 78% 28%,rgba(177,245,140,.14),transparent 62%),
+  radial-gradient(45% 34% at 95% 62%,rgba(46,160,70,.30),transparent 70%),
+  radial-gradient(40% 25% at 0% 0%,rgba(46,160,70,.10),transparent 70%)}
 .hero-in{width:100%}
 .hero .col{max-width:640px}
 .hero h1{margin:24px 0 28px}
@@ -196,7 +197,7 @@ main,.foot{position:relative;z-index:1}
    (all animation is transform/opacity only, so it stays on the compositor)
    ========================================================== */
 .hero h1 .g{color:var(--accent)}
-.aurora{position:absolute;inset:-20% -10% -10%;z-index:-1;pointer-events:none;overflow:hidden}
+.aurora{position:absolute;inset:-20% -10% -60vh;z-index:-1;pointer-events:none;overflow:hidden;-webkit-mask-image:linear-gradient(#000 50%,transparent 95%);mask-image:linear-gradient(#000 50%,transparent 95%)}
 .aurora i{position:absolute;border-radius:50%;opacity:.55;will-change:transform}
 .aurora i:nth-child(1){width:60vw;height:60vw;right:-8vw;top:-6vw;background:radial-gradient(closest-side,rgba(177,245,140,.34),rgba(177,245,140,0));animation:drift1 22s ease-in-out infinite alternate}
 .aurora i:nth-child(2){width:50vw;height:50vw;right:14vw;top:24vw;background:radial-gradient(closest-side,rgba(46,160,70,.42),rgba(46,160,70,0));animation:drift2 26s ease-in-out infinite alternate}
@@ -267,8 +268,7 @@ body{background:transparent}
 /* ---------- Intro: logo ring fills while the phone loads ---------- */
 .intro{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;background:var(--bg);transition:opacity .8s ease,visibility 0s linear .8s}
 .intro.done{opacity:0;visibility:hidden}
-.intro-ring{position:relative;width:120px;height:120px;display:flex;align-items:center;justify-content:center;transition:transform .8s var(--ease)}
-.intro.done .intro-ring{transform:scale(.92)}
+.intro-ring{position:relative;width:120px;height:120px;display:flex;align-items:center;justify-content:center}
 .intro-ring svg{position:absolute;inset:0;width:120px;height:120px;transform:rotate(-90deg)}
 .intro-ring circle{fill:none;stroke-width:2.5}
 .intro-fill{stroke:var(--accent);stroke-linecap:round;stroke-dasharray:351.86;stroke-dashoffset:351.86}
