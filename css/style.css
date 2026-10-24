@@ -129,7 +129,8 @@ p{font-size:16px;line-height:1.35;font-weight:300;letter-spacing:-.03em;color:va
 .icon-btn:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 
 /* The 3D phone's canvas: fixed over the page, fades in once the model is loaded */
-.stage{position:fixed;inset:0;width:100%;height:100%;z-index:2;pointer-events:none;opacity:0;transform:scale(.96);transition:opacity 1.2s ease,transform 1.4s var(--ease)}
+/* sized to a box around the phone and moved with it by js/phone3d.js (translate) */
+.stage{position:fixed;left:0;top:0;z-index:2;pointer-events:none;opacity:0;transform:scale(.96);transition:opacity 1.2s ease,transform 1.4s var(--ease)}
 .stage.is-in{opacity:1;transform:none}
 main,.foot{position:relative;z-index:1}
 

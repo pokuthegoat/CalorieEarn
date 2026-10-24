@@ -108,11 +108,14 @@
 
   const navSecs = navLinks.map(a => document.getElementById(a.dataset.sec));
   const afterNav = document.getElementById('final'); // at the final CTA nothing is highlighted
-  function updateNav() {
-    const line = innerHeight * 0.4;
+  let navActive = null;
+  function updateNav(y) {
+    const line = y + M.vh * 0.4;
     let active = -1;
-    navSecs.forEach((s, i) => { if (s.getBoundingClientRect().top <= line) active = i; });
-    if (afterNav.getBoundingClientRect().top <= line) active = -1;
+    M.nav.forEach((top, i) => { if (top <= line) active = i; });
+    if (M.final <= line) active = -1;
+    if (active === navActive) return;
+    navActive = active;
     navLinks.forEach((a, i) => a.classList.toggle('active', i === active));
   }
 
@@ -126,14 +129,15 @@
   document.querySelectorAll('.sheet a').forEach(a => a.addEventListener('click', () => setSheet(false)));
   addEventListener('keydown', e => { if (e.key === 'Escape') setSheet(false); });
 
+  let M; // cached layout (see measure() near the end)
+
   /* ---------- Scroll progress: the ring around the logo fills; the nav becomes an island past the hero ---------- */
   const ring = document.getElementById('ringFill');
   const RING = 2 * Math.PI * 20;
-  function updateProgress() {
-    const max = document.documentElement.scrollHeight - innerHeight;
-    const p = max > 0 ? clamp(scrollY / max, 0, 1) : 0;
+  function updateProgress(y) {
+    const p = M.docMax > 0 ? clamp(y / M.docMax, 0, 1) : 0;
     ring.style.strokeDashoffset = (RING * (1 - p)).toFixed(2);
-    navEl.classList.toggle('compact', scrollY > heroEl.offsetHeight * 0.5);
+    navEl.classList.toggle('compact', y > M.heroH * 0.5);
   }
 
   /* ---------- How it works: scrolling through the pinned section walks Log → Earn ---------- */
@@ -160,39 +164,44 @@
     else f = -2 * R / 3;
     return f + R / 3;
   }
-  function updateHow() {
-    const r = how.getBoundingClientRect();
-    howContent.style.transform = `translate3d(0,${softPin(-r.top, r.height - innerHeight).toFixed(1)}px,0)`;
-    const p = clamp(-r.top / (r.height - innerHeight), 0, 1);
+  let howStep = -1;
+  function updateHow(y) {
+    const d = y - M.howTop, L = M.howH - M.vh;
+    howContent.style.transform = `translate3d(0,${softPin(d, L).toFixed(1)}px,0)`;
+    const p = clamp(d / L, 0, 1);
     const step = Math.min(steps.length - 1, Math.floor(p * steps.length));
-    steps.forEach((li, i) => {
-      li.classList.toggle('on', i === step);
-      li.classList.toggle('done', i < step);
-    });
+    if (step !== howStep) {
+      howStep = step;
+      steps.forEach((li, i) => {
+        li.classList.toggle('on', i === step);
+        li.classList.toggle('done', i < step);
+      });
+    }
     window.__how.p = p;
     window.__how.step = step;
+    drawLoopLine();
   }
-  // Line runs from the first circle's centre to the last one's. The open description moves the circles,
-  // so re-measure every frame (cheap: four rects), and fill circle to circle rather than by a flat share.
-  function sizeLoopLine() {
+  // Line runs from the first circle's centre to the last one's, filling circle to circle rather than by a flat share.
+  // The circles only move when a step's description opens or closes, so they're measured then (a ResizeObserver
+  // reports it after layout, when reading positions is free) and every scroll frame just draws from those numbers.
+  let loopC = null;
+  function measureLoop() {
     const base = loopEl.getBoundingClientRect().top;
-    const c = nums.map(n => { const b = n.getBoundingClientRect(); return b.top + b.height / 2 - base; });
-    const len = c[c.length - 1] - c[0];
+    loopC = nums.map(n => { const b = n.getBoundingClientRect(); return b.top + b.height / 2 - base; });
+    drawLoopLine();
+  }
+  function drawLoopLine() {
+    if (!loopC) return;
+    const c = loopC, len = c[c.length - 1] - c[0];
     const q = clamp(window.__how.p * steps.length, 0, steps.length - 1);
     const k = Math.min(Math.floor(q), c.length - 2);
     const at = c[k] + (c[k + 1] - c[k]) * (q - k);
     loopLine.style.setProperty('--lt', c[0] + 'px');
     loopLine.style.setProperty('--lh', len + 'px');
     loopLine.style.setProperty('--fill', len > 0 ? ((at - c[0]) / len).toFixed(4) : 0);
-    if (howVisible) requestAnimationFrame(sizeLoopLine);
   }
-  // Only runs while the section is on screen (it reads layout every frame).
-  let howVisible = false;
-  new IntersectionObserver(([e]) => {
-    const was = howVisible;
-    howVisible = e.isIntersecting;
-    if (howVisible && !was) requestAnimationFrame(sizeLoopLine);
-  }).observe(how);
+  const loopRO = new ResizeObserver(measureLoop);
+  steps.forEach(li => loopRO.observe(li));
 
   /* ---------- Headings: words come in one after another (Coldly's blur-in, without the blur) ---------- */
   // Words are wrapped individually; <em>/<span> inside a heading (highlight, green words) are kept.
@@ -239,21 +248,22 @@
     el.innerHTML = words.map(w =>
       `<span class="fw">${[...w].map(c => `<span class="ch">${c}</span>`).join('')}</span>`
     ).join(' ');
-    return { el, chars: [...el.querySelectorAll('.ch')], base: 0.2 };
+    const chars = [...el.querySelectorAll('.ch')];
+    return { el, chars, last: chars.map(() => ''), base: 0.2 };
   });
   const EDGE = 14; // how many letters are mid-fade at once
-  function updateFills() {
-    const vh = innerHeight;
-    for (const f of fills) {
-      const r = f.el.getBoundingClientRect();
-      if (r.bottom < -vh || r.top > vh * 2) continue;
-      const p = reduce ? 1 : clamp((vh * 0.88 - r.top) / (vh * 0.43 + r.height), 0, 1);
+  function updateFills(y) {
+    const vh = M.vh;
+    fills.forEach((f, n) => {
+      const top = M.fills[n].top - y, h = M.fills[n].h;
+      if (top + h < -vh || top > vh * 2) return;
+      const p = reduce ? 1 : clamp((vh * 0.88 - top) / (vh * 0.43 + h), 0, 1);
       const head = p * (f.chars.length + EDGE);
       f.chars.forEach((c, i) => {
-        const t = clamp((head - i) / EDGE, 0, 1);
-        c.style.setProperty('--o', (f.base + (1 - f.base) * t).toFixed(3));
+        const v = (f.base + (1 - f.base) * clamp((head - i) / EDGE, 0, 1)).toFixed(3);
+        if (v !== f.last[i]) { f.last[i] = v; c.style.setProperty('--o', v); }
       });
-    }
+    });
   }
 
   /* ---------- Background: tone follows the section in view; drawings drift slowly ---------- */
@@ -262,11 +272,11 @@
   const toneEl = document.getElementById('bgTone');
   const toneSecs = Object.keys(TONE).map(id => document.getElementById(id));
   const arts = [...document.querySelectorAll('.bg-art')];
-  function updateBackground() {
-    const mid = innerHeight / 2;
-    const pts = toneSecs.map(s => { const r = s.getBoundingClientRect(); return { c: r.top + r.height / 2, v: TONE[s.id] }; });
+  function updateBackground(y) {
+    const mid = M.vh / 2;
+    const pts = toneSecs.map((s, i) => ({ c: M.tone[i] - y, v: TONE[s.id] }));
     let v = pts[0].v;
-    if (mid >= pts[pts.length - 1].c) v = pts[pts.length - 1].v * clamp(1 - (mid - pts[pts.length - 1].c) / innerHeight, 0, 1);
+    if (mid >= pts[pts.length - 1].c) v = pts[pts.length - 1].v * clamp(1 - (mid - pts[pts.length - 1].c) / M.vh, 0, 1);
     else for (let i = 0; i < pts.length - 1; i++) {
       if (mid >= pts[i].c && mid < pts[i + 1].c) {
         const t = (mid - pts[i].c) / (pts[i + 1].c - pts[i].c);
@@ -274,18 +284,42 @@
       }
     }
     toneEl.style.opacity = v.toFixed(3);
-    arts.forEach(a => {
-      const r = a.parentElement.getBoundingClientRect();
-      if (r.bottom < -200 || r.top > innerHeight + 200) return;
-      const off = (r.top + r.height / 2 - mid) * -0.18; // drifts slower than the page
+    arts.forEach((a, i) => {
+      const c = M.arts[i].c - y, half = M.arts[i].h / 2;
+      if (c + half < -200 || c - half > M.vh + 200) return;
+      const off = (c - mid) * -0.18; // drifts slower than the page
       a.style.transform = `translate3d(0,${off.toFixed(1)}px,0) rotate(${(off * 0.012).toFixed(2)}deg)`;
     });
   }
 
   /* ---------- Loop ---------- */
-  function onScroll() { updateNav(); updateProgress(); updateHow(); updateFills(); updateBackground(); }
+  // Section positions are measured once here (and again when the layout changes), so a scroll frame only
+  // does arithmetic and style writes. Reading positions on every frame between writes made the browser
+  // redo layout several times per frame.
+  const pageTop = el => el.getBoundingClientRect().top + scrollY;
+  function measure() {
+    M = {
+      vh: innerHeight,
+      docMax: document.documentElement.scrollHeight - innerHeight,
+      heroH: heroEl.offsetHeight,
+      nav: navSecs.map(pageTop),
+      final: pageTop(afterNav),
+      howTop: pageTop(how), howH: how.offsetHeight,
+      fills: fills.map(f => ({ top: pageTop(f.el), h: f.el.offsetHeight })),
+      tone: toneSecs.map(s => pageTop(s) + s.offsetHeight / 2),
+      arts: arts.map(a => ({ c: pageTop(a.parentElement) + a.parentElement.offsetHeight / 2, h: a.parentElement.offsetHeight })),
+    };
+  }
+  function onScroll() {
+    const y = scrollY;
+    updateNav(y); updateProgress(y); updateHow(y); updateFills(y); updateBackground(y);
+  }
+  measure();
   if (lenis) lenis.on('scroll', onScroll);
   else addEventListener('scroll', onScroll, { passive: true });
-  addEventListener('resize', onScroll);
+  const remeasure = () => { measure(); onScroll(); };
+  addEventListener('resize', remeasure);
+  new ResizeObserver(remeasure).observe(document.body);
+  document.fonts.ready.then(remeasure);
   onScroll();
 })();

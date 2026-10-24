@@ -92,7 +92,12 @@ const BANK = 0.1;             // sideways tilt per unit of horizontal speed
 
 const PATH_DEBUG = new URLSearchParams(location.search).has('pathdebug');
 
-const view = { w: 1, h: 1, visW: 1, visH: 1, narrow: false };
+const view = { w: 1, h: 1, visW: 1, visH: 1, narrow: false, boxW: 1, boxH: 1 };
+// Only a box around the phone is rendered, not the whole window: the canvas is that box and follows the phone,
+// and the camera renders just that part of its view (setViewOffset). Same picture and the same 2x sharpness,
+// a fraction of the pixels. The phone is at most ~0.6 of the window tall, so 0.84 leaves room for spins and tilts.
+const BOX = 0.84;
+const _c = new THREE.Vector3();
 let curves = null;
 
 // Between points: zero sideways speed at each point, fastest mid-crossing (round U-bends).
@@ -120,7 +125,11 @@ function waveCurve(ats, vals, pows) {
 function measure() {
   view.w = innerWidth;
   view.h = innerHeight;
-  renderer.setSize(view.w, view.h, false);
+  view.boxH = Math.min(view.h, Math.ceil(view.h * BOX));
+  view.boxW = Math.min(view.w, view.boxH);
+  renderer.setSize(view.boxW, view.boxH, false);
+  canvas.style.width = view.boxW + 'px';
+  canvas.style.height = view.boxH + 'px';
   camera.aspect = view.w / view.h;
   camera.updateProjectionMatrix();
   view.visH = 2 * camera.position.z * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
@@ -326,6 +335,20 @@ function start() {
       idle.rotation.z = Math.sin(t * 0.7) * 0.03;
       idle.rotation.x = Math.sin(t * 0.6) * 0.035;
     }
-    renderer.render(scene, camera);
+    renderBox();
   });
+}
+// Find where the phone's centre lands on screen, put the canvas box there and render only that part of the view.
+function renderBox() {
+  camera.clearViewOffset();
+  scene.updateMatrixWorld();
+  camera.updateMatrixWorld(); // the camera isn't in the scene: update it here, or the first projection uses a stale camera
+  idle.getWorldPosition(_c).project(camera);
+  const dpr = devicePixelRatio || 1, snap = (v) => Math.round(v * dpr) / dpr;   // whole device pixels: no resampling blur
+  const x = snap((_c.x + 1) / 2 * view.w - view.boxW / 2);
+  const y = snap((1 - _c.y) / 2 * view.h - view.boxH / 2);
+  canvas.style.translate = `${x}px ${y}px`;
+  if (x >= view.w || y >= view.h || x + view.boxW <= 0 || y + view.boxH <= 0) return; // fully off screen: nothing to draw
+  camera.setViewOffset(view.w, view.h, x, y, view.boxW, view.boxH);
+  renderer.render(scene, camera);
 }
