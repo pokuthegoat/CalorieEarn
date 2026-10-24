@@ -8,7 +8,7 @@
 <link rel="icon" href="assets/logo.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lenis@1.3.27/dist/lenis.css">
 <link rel="stylesheet" href="css/style.css">
 </head>
@@ -30,6 +30,8 @@
   <symbol id="i-search" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></g></symbol>
   <symbol id="i-barcode" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7V5h3M17 5h3v2M20 17v2h-3M7 19H4v-2M8 9v6M11 9v6M14 9v6M17 9v6"/></g></symbol>
   <symbol id="i-pencil" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 5.5l4 4L9 19H5v-4z"/><path d="M12.5 7.5l4 4"/></g></symbol>
+  <symbol id="i-camera" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8.5h3l1.6-2.5h6.8L17 8.5h3V18H4z"/><circle cx="12" cy="13" r="3.2"/></g></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4.5v10M8 10.5l4 4 4-4M5 15v4h14v-4"/></g></symbol>
   <symbol id="i-ring" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="7.5" opacity=".35"/><path d="M12 4.5a7.5 7.5 0 0 1 7.2 9.6"/></g></symbol>
   <symbol id="i-bars" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 19v-5M9.7 19V9M14.3 19v-7M19 19V6"/></g></symbol>
   <symbol id="i-repeat" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 4l3 3-3 3"/><path d="M20 7H9a5 5 0 0 0-5 5"/><path d="M7 20l-3-3 3-3"/><path d="M4 17h11a5 5 0 0 0 5-5"/></g></symbol>
@@ -123,9 +125,9 @@
           <div class="loop" id="loop">
             <span class="loop-line" aria-hidden="true"><i></i></span>
             <ol>
-            <li class="on"><span class="n">1</span><div><h3>Log</h3><div class="d"><p>Log meals through food search, barcode scanning or manual entry.</p></div></div></li>
-            <li><span class="n">2</span><div><h3>Review</h3><div class="d"><p>Review and edit portions, calories and nutrients.</p></div></div></li>
-            <li><span class="n">3</span><div><h3>Check in</h3><div class="d"><p>Complete your daily check-in and build your participation streak.</p></div></div></li>
+            <li class="on"><span class="n">1</span><div><h3>Log</h3><div class="d"><p>Search packaged foods, scan a barcode, take a photo or enter a food manually.</p></div></div></li>
+            <li><span class="n">2</span><div><h3>Review</h3><div class="d"><p>Check the portions and calories, and tap any food to adjust it before saving.</p></div></div></li>
+            <li><span class="n">3</span><div><h3>Check in</h3><div class="d"><p>Log or repeat a meal, then check in. Any 5 days a week counts, and a fresh week starts Monday.</p></div></div></li>
             <li><span class="n">4</span><div><h3>Earn</h3><div class="d"><p>Earn token rewards under the campaign’s published rules.</p></div></div></li>
             </ol>
           </div>
@@ -145,12 +147,14 @@
       <div class="col right">
         <p class="eyebrow">Logging</p>
         <h2>Fast meal logging, with quantities you can edit.</h2>
-        <p class="lead">Search for a food, scan its barcode or enter it yourself. Then adjust the portion until the calories and nutrients match what you ate.</p>
-        <div class="minis three">
+        <p class="lead">Search packaged foods by name or brand, scan a barcode, or take a photo for an estimate. You can always enter a food manually. Then tap a food to adjust it before saving.</p>
+        <div class="minis two">
           <div class="mini"><span class="mi"><svg><use href="#i-search"/></svg></span><b>Food search</b></div>
           <div class="mini"><span class="mi"><svg><use href="#i-barcode"/></svg></span><b>Barcode scanning</b></div>
+          <div class="mini"><span class="mi"><svg><use href="#i-camera"/></svg></span><b>Photo estimate</b></div>
           <div class="mini"><span class="mi"><svg><use href="#i-pencil"/></svg></span><b>Manual entry</b></div>
         </div>
+        <p class="fine">Photo estimates are made on your iPhone by Apple Intelligence. Estimates can be wrong, especially oils, sauces and portion sizes. Not medical advice.</p>
       </div>
     </div>
   </section>
@@ -164,10 +168,11 @@
       <div class="col">
         <p class="eyebrow">Nutrition</p>
         <h2>Understand your nutrition, day by day.</h2>
-        <p class="lead">Daily calorie and nutrient summaries show what you ate today. Weekly progress shows how the habit is going.</p>
-        <div class="minis two">
+        <p class="lead">Daily calorie and nutrient summaries show what you ate today. Weekly progress shows your routine, based on what you’ve actually logged. Prefer a plain food journal? Turn the nutrition numbers off.</p>
+        <div class="minis three">
           <div class="mini"><span class="mi"><svg><use href="#i-ring"/></svg></span><b>Daily calorie and nutrient summaries</b></div>
           <div class="mini"><span class="mi"><svg><use href="#i-bars"/></svg></span><b>Weekly progress</b></div>
+          <div class="mini"><span class="mi"><svg><use href="#i-book"/></svg></span><b>Plain food journal mode</b></div>
         </div>
       </div>
     </div>
@@ -184,8 +189,8 @@
         <h2>Built to make logging a habit.</h2>
         <div class="minis two">
           <div class="mini"><span class="mi"><svg><use href="#i-repeat"/></svg></span><b>Saved meals, recent foods and repeat logging</b></div>
-          <div class="mini"><span class="mi"><svg><use href="#i-clock"/></svg></span><b>Meal history</b></div>
-          <div class="mini"><span class="mi"><svg><use href="#i-flame"/></svg></span><b>Flexible streaks</b></div>
+          <div class="mini"><span class="mi"><svg><use href="#i-clock"/></svg></span><b>History to browse, edit or repeat past meals</b></div>
+          <div class="mini"><span class="mi"><svg><use href="#i-flame"/></svg></span><b>Flexible streaks: any 5 days a week</b></div>
           <div class="mini"><span class="mi"><svg><use href="#i-cal"/></svg></span><b>Weekly progress</b></div>
         </div>
       </div>
@@ -208,8 +213,9 @@
         </div>
         <ul class="ticks">
           <li>No purchase, deposit or trading required</li>
-          <li>Food logging stays useful without connecting a wallet</li>
-          <li>A rewards screen shows pending, available and claimed tokens</li>
+          <li>Your diary, check-ins and progress work fully without rewards</li>
+          <li>Campaigns need an account. Logging doesn’t.</li>
+          <li>A rewards screen shows what you’ve earned and whether a campaign is running</li>
         </ul>
       </div>
     </div>
@@ -229,11 +235,11 @@
         <div class="flow">
           <span class="flow-line" aria-hidden="true"></span>
           <div class="mini row"><span class="mi"><svg><use href="#i-vault"/></svg></span><div><b>Treasury</b><small>Fixed token allocation</small></div></div>
-          <div class="mini row"><span class="mi"><svg><use href="#i-layers"/></svg></span><div><b>Campaigns</b><small>Capped daily and weekly, backed by available tokens</small></div></div>
+          <div class="mini row"><span class="mi"><svg><use href="#i-layers"/></svg></span><div><b>Campaigns</b><small>Capped daily and weekly, backed by available tokens, with rules published first</small></div></div>
           <div class="mini row"><span class="mi"><svg><use href="#i-user"/></svg></span><div><b>Eligible users</b><small>Consistent logging and daily check-ins</small></div></div>
           <div class="mini row later"><span class="mi"><svg><use href="#i-layers"/></svg></span><div><b>Later</b><small>Actually collected creator fees may fund additional campaigns</small></div></div>
         </div>
-        <p class="fine">Token rewards are not guaranteed cash earnings, and their value can change.</p>
+        <p class="fine">No token has launched yet, and token distribution is turned off in the current build. Token rewards are not guaranteed cash earnings, and their value can change.</p>
       </div>
     </div>
   </section>
@@ -248,7 +254,9 @@
         <p class="eyebrow">Privacy</p>
         <h2>Your food records stay <em class="hl">private.</em></h2>
         <div class="minis stack">
-          <div class="mini row"><span class="mi"><svg><use href="#i-lock"/></svg></span><div><b>Private and offchain</b><small>Food records are private and stay offchain.</small></div></div>
+          <div class="mini row"><span class="mi"><svg><use href="#i-lock"/></svg></span><div><b>Private and offchain</b><small>Your diary is stored in the app’s private storage on your device. Food records stay offchain.</small></div></div>
+          <div class="mini row"><span class="mi"><svg><use href="#i-user"/></svg></span><div><b>Optional account</b><small>Sign in with Apple to back up your diary privately and sync it across devices. Only your Apple account’s private ID is used. No name or email is collected.</small></div></div>
+          <div class="mini row"><span class="mi"><svg><use href="#i-download"/></svg></span><div><b>Your data, your call</b><small>Export your diary as a JSON file, or delete all of it from your device.</small></div></div>
           <div class="mini row"><span class="mi"><svg><use href="#i-book"/></svg></span><div><b>Younger users</b><small>A journal experience, without automatically assigned calorie targets.</small></div></div>
         </div>
       </div>
