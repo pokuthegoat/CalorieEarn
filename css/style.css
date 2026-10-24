@@ -86,6 +86,8 @@ p{font-size:16px;line-height:1.35;font-weight:300;letter-spacing:-.03em;color:va
 .ring-track{stroke:var(--line)}
 .ring-fill{stroke:var(--accent);stroke-linecap:round;stroke-dasharray:125.66;stroke-dashoffset:125.66}
 .brand-ring img{width:30px;height:30px;border-radius:50%}
+/* the logo mark on its own: just the crossing-arrow lines, no tile behind them */
+.brand-ring .brand-mark{position:static;width:26px;height:26px;transform:none;fill:none;stroke:var(--accent);stroke-width:30;stroke-linecap:butt;stroke-linejoin:round}
 .nav.compact .brand-name{font-size:19px}
 .brand-name{transition:font-size .5s var(--ease)}
 

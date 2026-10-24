@@ -6,7 +6,14 @@
 // How it works is tied to scrolling (window.__how from main.js); the rest play a short intro, then hold.
 
 const screen = window.__phoneScreen;
-const { ctx, width: W, height: H, texture } = screen;
+const { width: W, height: H, texture } = screen;
+const screenCtx = screen.ctx;
+// During a crossfade the incoming screen is drawn whole on this offscreen canvas first, then faded in as one
+// image. (Drawing it layer by layer at partial opacity let its dark background dim the old screen mid-fade.)
+const fadeCanvas = document.createElement('canvas');
+fadeCanvas.width = W; fadeCanvas.height = H;
+const fadeCtx = fadeCanvas.getContext('2d');
+let ctx = screenCtx; // every drawing helper draws into whichever canvas this points at
 const UW = 720, UH = 1560, US = W / UW; // shot space
 
 const C = {
@@ -61,12 +68,9 @@ function faded(a, fn) {
   fn();
   ctx.restore();
 }
-// staggered intro: block i fades in and rises a little
-function rise(t, i, fn) {
-  if (t === null) return fn();
-  const a = easeOut((t - 0.08 - i * 0.07) / 0.5);
-  faded(a, () => { ctx.save(); ctx.translate(0, (1 - a) * 26); fn(); ctx.restore(); });
-}
+// A screen's blocks. They used to fade in one by one, but that left the screen mostly dark background for a
+// moment (it read as the screen dimming), so screens now arrive whole and only the crossfade moves them in.
+function rise(t, i, fn) { fn(); }
 
 // The app's mark = the logo's black crossing arrows, in the accent green: cut out of logo.jpg by darkness.
 const logo = new Image();
@@ -368,8 +372,8 @@ function progress(t = null) {
     text('0', 58, 512, 84, C.text, 700);
     text('of 7 days logged', 127, 508, 24, C.mute);
     for (let i = 0; i < 7; i++) {
-      const x = 58 + i * 88.4, k = t === null ? 1 : easeOut((t - 0.3 - i * 0.05) / 0.4);
-      faded(k, () => box(x, 555 + (1 - k) * 10, 74, 64, 16, i < 6 ? 'rgba(0,0,0,.2)' : 'rgba(255,255,255,.05)'));
+      const x = 58 + i * 88.4;
+      box(x, 555, 74, 64, 16, i < 6 ? 'rgba(0,0,0,.2)' : 'rgba(255,255,255,.05)');
       text('MTWTFSS'[i], x + 37, 652, 19, C.mute, 500, 'center');
     }
     box(58, 688, 604, 42, 21, 'rgba(255,255,255,.07)');
@@ -528,7 +532,7 @@ const DRAW = {
   final,
 };
 // How long each screen keeps animating after it appears (s). After that it's a still image.
-const ANIM = { hero: 1.0, logging: 0.8, nutrition: 1.0, habits: 0.9, rewards: 0.9, treasury: 1.3, privacy: 1.1, final: 1.4 };
+const ANIM = { logging: 0.8, treasury: 1.3, privacy: 1.1, final: 1.4 };
 function howLp(k) { return clamp((window.__how?.p ?? 0) * 4 - k); }
 function drawScreen(key, t) {
   ctx.save();
@@ -570,13 +574,18 @@ function frame(now) {
   const t = (now - since) / 1000;
   if (!needsDraw(current, t)) return;
   const fade = prev ? easeOut(t / FADE) : 1;
-  ctx.save();
-  if (prev && fade < 1) drawScreen(prev, (now - prevSince) / 1000);
-  else prev = null;
-  ctx.globalAlpha = fade;
-  drawScreen(current, t);
-  ctx.restore();
-  ctx.globalAlpha = 1;
+  if (prev && fade < 1) {
+    drawScreen(prev, (now - prevSince) / 1000);
+    ctx = fadeCtx;
+    drawScreen(current, t);
+    ctx = screenCtx;
+    ctx.globalAlpha = fade;
+    ctx.drawImage(fadeCanvas, 0, 0);
+    ctx.globalAlpha = 1;
+  } else {
+    prev = null;
+    drawScreen(current, t);
+  }
   lastP = window.__how?.p ?? 0;
   drawn = true;
   texture.needsUpdate = true;
