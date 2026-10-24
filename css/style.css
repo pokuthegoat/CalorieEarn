@@ -87,7 +87,7 @@ p{font-size:16px;line-height:1.35;font-weight:300;letter-spacing:-.03em;color:va
 .ring-fill{stroke:var(--accent);stroke-linecap:round;stroke-dasharray:125.66;stroke-dashoffset:125.66}
 .brand-ring img{width:30px;height:30px;border-radius:50%}
 /* the logo mark on its own: just the crossing-arrow lines, no tile behind them */
-.brand-ring .brand-mark{position:static;width:26px;height:26px;transform:none;fill:none;stroke:var(--accent);stroke-width:30;stroke-linecap:butt;stroke-linejoin:round}
+.brand-ring .brand-mark{position:static;width:20px;height:20px;transform:none;fill:var(--accent)}
 .nav.compact .brand-name{font-size:19px}
 .brand-name{transition:font-size .5s var(--ease)}
 
@@ -261,6 +261,7 @@ body{background:transparent}
 .intro-ring circle{fill:none;stroke-width:2.5}
 .intro-fill{stroke:var(--accent);stroke-linecap:round;stroke-dasharray:351.86;stroke-dashoffset:351.86}
 .intro-ring img{width:72px;height:72px;border-radius:50%}
+.intro-ring .intro-mark{position:static;width:64px;height:64px;transform:none;fill:var(--accent)}
 html.intro-on,html.intro-on body{overflow:hidden}
 
 /* ---------- Final: the actions you can actually take right now ---------- */
