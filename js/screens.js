@@ -1,7 +1,7 @@
 // What the 3D phone's screen shows. Draws into the canvas phone3d.js maps onto the display.
 // The screens are redrawn 1:1 from the real app (screenshots + the 25 Oct walkthrough recording), so they
 // stay sharp on the phone and can animate. All drawing happens in "shot space": 720×1560, the screenshots at 2×,
-// scaled to the screen canvas (1080×2340) — positions are read straight off the screenshots.
+// scaled to the screen canvas (810×1755) — positions are read straight off the screenshots.
 // The screen follows the section in the middle of the viewport and slides to the next one when it changes.
 // How it works is tied to scrolling (window.__how from main.js); the rest play a short intro, then hold.
 

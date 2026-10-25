@@ -308,8 +308,9 @@ function slotPath(dt) {
 }
 
 /* ---------- Screen: a canvas the section visuals (js/screens.js) draw into ---------- */
-// 2x the old 540×1170: the phone is shown up to ~1000 device pixels tall, so half that resolution got stretched (blurry)
-const SCREEN_W = 1080, SCREEN_H = 2340;
+// 1.5x the old 540×1170 (that got stretched = blurry). 2x was sharper still, but copying that big an image to the GPU
+// on every change made scrolling stutter; 1.5x cut the stutters ~70% in testing.
+const SCREEN_W = 810, SCREEN_H = 1755;
 const screenCanvas = document.createElement('canvas');
 screenCanvas.width = SCREEN_W;
 screenCanvas.height = SCREEN_H;
