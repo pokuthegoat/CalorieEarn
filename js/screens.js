@@ -1,19 +1,17 @@
 // What the 3D phone's screen shows. Draws into the canvas phone3d.js maps onto the display.
 // The screens are redrawn 1:1 from the real app (screenshots + the 25 Oct walkthrough recording), so they
 // stay sharp on the phone and can animate. All drawing happens in "shot space": 720×1560, the screenshots at 2×,
-// scaled down to the 540×1170 canvas — positions are read straight off the screenshots.
-// The screen follows the section in the middle of the viewport and crossfades when it changes.
+// scaled to the screen canvas (1080×2340) — positions are read straight off the screenshots.
+// The screen follows the section in the middle of the viewport and slides to the next one when it changes.
 // How it works is tied to scrolling (window.__how from main.js); the rest play a short intro, then hold.
 
 const screen = window.__phoneScreen;
 const { width: W, height: H, texture } = screen;
 const screenCtx = screen.ctx;
-// During a crossfade the incoming screen is drawn whole on this offscreen canvas first, then faded in as one
-// image. (Drawing it layer by layer at partial opacity let its dark background dim the old screen mid-fade.)
-const fadeCanvas = document.createElement('canvas');
-fadeCanvas.width = W; fadeCanvas.height = H;
-const fadeCtx = fadeCanvas.getContext('2d');
-let ctx = screenCtx; // every drawing helper draws into whichever canvas this points at
+const ctx = screenCtx;
+// While two screens slide past each other the shared green background is drawn once, still, underneath
+// (else each screen's own background would slide along and leave a seam), so greenBg() skips while this is set.
+let noBg = false;
 const UW = 720, UH = 1560, US = W / UW; // shot space
 
 const C = {
@@ -156,21 +154,33 @@ function icon(name, cx, cy, s, color = C.acc, lw = 3) {
 }
 
 /* ---------- app chrome ---------- */
+// The app's green background: four full-screen gradients, the most expensive thing on any screen. It never
+// changes, so it's painted once into its own canvas and every screen just copies that.
+let bgCanvas = null;
 function greenBg() {
-  ctx.fillStyle = '#040504'; ctx.fillRect(0, 0, UW, UH);
-  const g = ctx.createRadialGradient(430, 150, 0, 430, 150, 760);
-  g.addColorStop(0, '#3fa54e'); g.addColorStop(0.28, '#2a8a3a'); g.addColorStop(0.55, 'rgba(22,84,32,.75)'); g.addColorStop(1, 'rgba(4,5,4,0)');
-  ctx.fillStyle = g; ctx.fillRect(0, 0, UW, UH);
-  const v = ctx.createLinearGradient(0, 0, 0, UH);
-  v.addColorStop(0, 'rgba(4,5,4,0)'); v.addColorStop(0.28, 'rgba(4,5,4,0)'); v.addColorStop(0.5, 'rgba(4,5,4,.85)'); v.addColorStop(0.6, '#040504');
-  ctx.fillStyle = v; ctx.fillRect(0, 0, UW, UH);
-  const l = ctx.createLinearGradient(0, 0, UW, 0);
-  l.addColorStop(0, 'rgba(4,5,4,.45)'); l.addColorStop(0.45, 'rgba(4,5,4,0)');
-  ctx.fillStyle = l; ctx.fillRect(0, 0, UW, UH);
+  if (noBg) return;
+  if (!bgCanvas) {
+    bgCanvas = document.createElement('canvas');
+    bgCanvas.width = W; bgCanvas.height = H;
+    const c = bgCanvas.getContext('2d');
+    c.scale(US, US);
+    c.fillStyle = '#040504'; c.fillRect(0, 0, UW, UH);
+    const g = c.createRadialGradient(430, 150, 0, 430, 150, 760);
+    g.addColorStop(0, '#3fa54e'); g.addColorStop(0.28, '#2a8a3a'); g.addColorStop(0.55, 'rgba(22,84,32,.75)'); g.addColorStop(1, 'rgba(4,5,4,0)');
+    c.fillStyle = g; c.fillRect(0, 0, UW, UH);
+    const v = c.createLinearGradient(0, 0, 0, UH);
+    v.addColorStop(0, 'rgba(4,5,4,0)'); v.addColorStop(0.28, 'rgba(4,5,4,0)'); v.addColorStop(0.5, 'rgba(4,5,4,.85)'); v.addColorStop(0.6, '#040504');
+    c.fillStyle = v; c.fillRect(0, 0, UW, UH);
+    const l = c.createLinearGradient(0, 0, UW, 0);
+    l.addColorStop(0, 'rgba(4,5,4,.45)'); l.addColorStop(0.45, 'rgba(4,5,4,0)');
+    c.fillStyle = l; c.fillRect(0, 0, UW, UH);
+  }
+  ctx.drawImage(bgCanvas, 0, 0, UW, UH);
 }
-// modal sheet over the green: dark panel from y, rounded top, grab handle
-function sheet(y = 112) {
-  greenBg();
+// modal sheet over the green: dark panel from y, rounded top, grab handle.
+// bg = false while it slides up over another screen (only the panel moves, not a second background).
+function sheet(y = 112, bg = true) {
+  if (bg) greenBg();
   box(0, y, UW, UH - y + 60, 60, '#070907');
   box(330, y + 28, 60, 8, 4, 'rgba(255,255,255,.22)');
 }
@@ -199,6 +209,10 @@ function monthNav(cy, dark = false) {
 }
 const TABS = [['Today', 'sun'], ['History', 'cal'], ['Progress', 'bars'], ['Rewards', 'gift']];
 function tabBar(active) {
+  // content fades out above the floating bar instead of running into it
+  const fade = ctx.createLinearGradient(0, 1352, 0, 1400);
+  fade.addColorStop(0, 'rgba(4,5,4,0)'); fade.addColorStop(1, '#040504');
+  ctx.fillStyle = fade; ctx.fillRect(0, 1352, UW, UH - 1352);
   box(33, 1393, 522, 110, 55, 'rgba(26,30,26,.94)', 'rgba(255,255,255,.12)');
   TABS.forEach(([label, ic], i) => {
     const cx = 100 + i * 128.7, on = i === active;
@@ -268,7 +282,7 @@ function addFood(t = null, { typed = '', caret = false, chip = 0, slide = 1 } = 
   if (slide < 1) today();
   ctx.save();
   ctx.translate(0, (1 - easeOut(slide)) * UH);
-  sheet();
+  sheet(112, slide >= 1);
   text('Add food', 30, 212, 40, C.text, 700);
   text('Lunch · Today', 30, 244, 21, C.mute);
   circle(657, 211, 33, 'rgba(255,255,255,.12)'); icon('close', 657, 211, 20, C.text, 3.5);
@@ -296,13 +310,6 @@ function photoEstimate(t = null, { shown = 1, tap = -1, tapK = 0, addPress = 0 }
   text('Photo estimate', 30, 212, 40, C.text, 700);
   text('Lunch · Today', 30, 244, 21, C.mute);
   circle(657, 211, 33, 'rgba(255,255,255,.12)'); icon('close', 657, 211, 20, C.text, 3.5);
-  // the bottom edge of the meal photo (scrolled up under the title)
-  ctx.save(); ctx.beginPath(); ctx.roundRect(30, 262, 660, 54, [0, 0, 30, 30]); ctx.clip();
-  const wood = ctx.createLinearGradient(0, 262, 0, 316); wood.addColorStop(0, '#5a4130'); wood.addColorStop(1, '#3b2a1d');
-  ctx.fillStyle = wood; ctx.fillRect(30, 262, 660, 54);
-  ctx.strokeStyle = 'rgba(255,255,255,.07)'; ctx.lineWidth = 2; [282, 298, 309].forEach((y) => { ctx.beginPath(); ctx.moveTo(30, y); ctx.lineTo(690, y + 4); ctx.stroke(); });
-  ctx.beginPath(); ctx.ellipse(360, 262, 40, 10, 0, 0, Math.PI); ctx.fillStyle = 'rgba(240,240,235,.85)'; ctx.fill();
-  ctx.restore();
   // total counts up as the foods come in
   const total = ESTIMATE.reduce((sum, e, i) => sum + e[3] * easeOut(clamp(shown * 3 - i)), 0);
   const tg = ctx.createLinearGradient(30, 0, 690, 0); tg.addColorStop(0, 'rgba(45,110,45,.55)'); tg.addColorStop(1, 'rgba(30,60,30,.35)');
@@ -312,11 +319,15 @@ function photoEstimate(t = null, { shown = 1, tap = -1, tapK = 0, addPress = 0 }
   box(468, 375, 194, 42, 21, 'rgba(210,200,120,.14)');
   icon('spark', 496, 396, 24, '#dcd28e', 2.2);
   text('AI estimate', 518, 404, 20, '#dcd28e', 600);
-  glass(30, 505, 660, 493, 40, 'rgba(120,175,110,.13)');
+  // the list card grows row by row as the foods come in (no big empty box while it loads)
+  const rows = clamp(shown * 3, 0, 3);
+  // each row's slot opens at the same pace that row fades in, so nothing pokes out below the card
+  const cardH = 165 + 164 * easeOut(clamp(rows - 1)) + 164 * easeOut(clamp(rows - 2));
+  faded(easeOut(rows), () => glass(30, 505, 660, cardH, 40, 'rgba(120,175,110,.13)'));
   ESTIMATE.forEach(([name, sub, tag, kcal], i) => {
     const a = easeOut(clamp(shown * 3 - i)), y = 505 + i * 165;
-    if (i) { ctx.fillStyle = 'rgba(255,255,255,.06)'; ctx.fillRect(58, y, 632, 2); }
     faded(a, () => {
+      if (i) { ctx.fillStyle = 'rgba(255,255,255,.06)'; ctx.fillRect(58, y, 632, 2); }
       if (i === tap) faded(Math.sin(clamp(tapK) * Math.PI), () => box(34, y + 4, 652, 157, i ? 0 : [36, 36, 0, 0], 'rgba(255,255,255,.07)'));
       text(name, 58, y + 50, 27, C.text, 500);
       text(sub, 58, y + 87, 21, C.mute);
@@ -326,9 +337,8 @@ function photoEstimate(t = null, { shown = 1, tap = -1, tapK = 0, addPress = 0 }
       icon('chevR', 645, y + 82, 18, 'rgba(255,255,255,.35)', 3);
     });
   });
-  lines(['The salmon is a bit stylized, but the portion and shape are', 'clear'], 37, 1045, 27, 20);
-  lines(['Tap a food to adjust it before saving. Estimates can be', 'wrong, especially oils, sauces and portion sizes.'], 37, 1121, 27, 20);
-  text('Not medical advice.', 360, 1205, 20, C.mute, 400, 'center');
+  lines(['Tap a food to adjust it before saving. Estimates can be', 'wrong, especially oils, sauces and portion sizes.'], 37, 1045, 27, 20);
+  text('Not medical advice.', 360, 1130, 20, C.mute, 400, 'center');
   ctx.fillStyle = 'rgba(255,255,255,.06)'; ctx.fillRect(0, 1289, UW, 2);
   const s = press(addPress), bw = 660 * s, bh = 92 * s;
   const bg = ctx.createLinearGradient(30, 0, 690, 0); bg.addColorStop(0, '#cdf6ae'); bg.addColorStop(1, '#94dc70');
@@ -358,8 +368,6 @@ function history(t = null, { dot = null } = {}) {
     text('Saved meals', 37, 1106, 31, C.text, 600);
     glass(30, 1137, 660, 183, 40, 'rgba(150,205,135,.13)');
     lines(['Open any day and choose “Save foods as a', 'meal” to keep a combination you eat often.', 'Logging it again creates new entries and never', 'changes the original.'], 58, 1190, 32, 23);
-    text('Logged days', 37, 1406, 31, C.text, 600);
-    glass(30, 1432, 660, 200, 40, 'rgba(150,205,135,.13)');
   });
   tabBar(1);
 }
@@ -476,23 +484,30 @@ function final(t) {
 }
 
 /* ---------- How it works: one app moment per step, driven by scroll ---------- */
-function howLog(lp) {
-  const typed = 'Greek yogurt'.slice(0, Math.round(span(lp, 0.3, 0.7) * 12));
-  const blink = Math.floor(performance.now() / 500) % 2 === 0;
-  addFood(null, { slide: span(lp, 0, 0.22), typed, caret: lp > 0.24 && lp < 0.96 && blink, chip: span(lp, 0.78, 0.9) });
-}
-function howReview(lp) {
-  photoEstimate(null, { shown: span(lp, 0.05, 0.5), tap: 0, tapK: span(lp, 0.55, 0.75), addPress: span(lp, 0.85, 0.97) });
-}
-function howCheckin(lp) {
-  history(null, { dot: { logged: easeOut(span(lp, 0.15, 0.35)), fill: easeOut(span(lp, 0.5, 0.7)) } });
-}
-function howEarn() { rewards(); }
+// Each step = what the screen looks like at that scroll progress (state), and how to draw that state. Comparing
+// states lets a still stretch of scrolling skip redrawing: most of each step the picture isn't changing.
+const HOW_STEPS = [
+  { // Log
+    state: (lp) => ({
+      slide: span(lp, 0, 0.22), typed: Math.round(span(lp, 0.3, 0.7) * 12), chip: span(lp, 0.78, 0.9),
+      caret: lp > 0.24 && lp < 0.96 && Math.floor(performance.now() / 500) % 2 === 0,
+    }),
+    draw: (s) => addFood(null, { slide: s.slide, typed: 'Greek yogurt'.slice(0, s.typed), caret: s.caret, chip: s.chip }),
+  },
+  { // Review
+    state: (lp) => ({ shown: span(lp, 0.05, 0.5), tapK: span(lp, 0.55, 0.75), addPress: span(lp, 0.85, 0.97) }),
+    draw: (s) => photoEstimate(null, { shown: s.shown, tap: 0, tapK: s.tapK, addPress: s.addPress }),
+  },
+  { // Check in
+    state: (lp) => ({ logged: easeOut(span(lp, 0.15, 0.35)), fill: easeOut(span(lp, 0.5, 0.7)) }),
+    draw: (s) => history(null, { dot: s }),
+  },
+  { state: () => ({}), draw: () => rewards() }, // Earn
+];
 
 /* ---------- which screen, and switching ---------- */
 const SECTIONS = ['hero', 'how', 'logging', 'nutrition', 'habits', 'rewards', 'privacy', 'final']
   .map((id) => document.getElementById(id));
-const HOW_STEPS = [howLog, howReview, howCheckin, howEarn];
 
 // Section tops in page pixels, measured on layout changes, so picking the screen never reads layout per frame.
 let tops = [];
@@ -516,7 +531,8 @@ function activeKey() {
 
 const DRAW = {
   hero: (t) => today(t),
-  logging: (t) => addFood(null, { slide: easeOut(t / 0.7) }),
+  // the sheet waits for the switch to finish, then slides up over Today
+  logging: (t) => addFood(null, { slide: easeOut((t - SWITCH) / 0.7) }),
   nutrition: (t) => progress(t),
   habits: (t) => history(t),
   rewards: (t) => rewards(t),
@@ -524,61 +540,107 @@ const DRAW = {
   final,
 };
 // How long each screen keeps animating after it appears (s). After that it's a still image.
-const ANIM = { logging: 0.8, privacy: 1.1, final: 1.4 };
+const ANIM = { logging: 1.2, privacy: 1.1, final: 1.4 };
 function howLp(k) { return clamp((window.__how?.p ?? 0) * 4 - k); }
+function drawContent(key, t) {
+  if (key.startsWith('how')) {
+    const step = HOW_STEPS[+key.slice(3)];
+    step.draw(step.state(howLp(+key.slice(3))));
+  } else DRAW[key](t);
+}
 function drawScreen(key, t) {
   ctx.save();
   ctx.scale(US, US);
-  if (key.startsWith('how')) {
-    const k = +key.slice(3);
-    HOW_STEPS[k](howLp(k));
-  } else DRAW[key](t);
+  drawContent(key, t);
   if (key !== 'final') statusBar(); // the lock screen shows the time big instead
   ctx.restore();
 }
 
-const FADE = 0.4;
+// Switching screens, like iOS: the phone is never empty and two screens' text never overlap.
+//   screen → screen: the later screen (page order) slides over the earlier one from the right with a soft edge
+//   shadow, while the earlier one drifts left and dims; scrolling up runs the same thing backwards
+//   screen → sheet: the sheet slides up over the dimming screen; sheet → screen: it slides back down off it
+// The green background and status bar stay still underneath.
+const SWITCH = 0.45;
+const ORDER = ['hero', 'how0', 'how1', 'how2', 'how3', 'logging', 'nutrition', 'habits', 'rewards', 'privacy', 'final'];
+// Is it showing a sheet right now? (Log and Logging start as Today and slide their sheet up themselves.)
+function isSheet(key, t) {
+  if (key === 'how1' || key === 'privacy') return true;
+  if (key === 'how0') return howLp(0) > 0.5;
+  if (key === 'logging') return t > SWITCH;
+  return false;
+}
+function drawSwitch(a, ta, b, tb, k) {
+  const e = easeInOut(k), dir = ORDER.indexOf(b) > ORDER.indexOf(a) ? 1 : -1;
+  const sa = isSheet(a, ta), sb = isSheet(b, tb);
+  const at = (dx, dy, key, t) => { ctx.save(); ctx.translate(dx, dy); drawContent(key, t); ctx.restore(); };
+  ctx.save();
+  ctx.scale(US, US);
+  greenBg();
+  noBg = true;
+  const dim = (k2) => { ctx.fillStyle = `rgba(0,0,0,${0.35 * k2})`; ctx.fillRect(0, 0, UW, UH); };
+  if (!sa && sb) { at(0, 0, a, ta); dim(e); at(0, (1 - e) * UH, b, tb); }
+  else if (sa && !sb) { at(0, 0, b, tb); dim(1 - e); at(0, e * UH, a, ta); }
+  else {
+    const [lo, loT, hi, hiT] = dir > 0 ? [a, ta, b, tb] : [b, tb, a, ta];
+    const p = dir > 0 ? e : 1 - e, x = (1 - p) * UW; // how far the later screen is in
+    at(-0.3 * p * UW, 0, lo, loT);
+    dim(p);
+    const sh = ctx.createLinearGradient(x - 36, 0, x, 0);
+    sh.addColorStop(0, 'rgba(0,0,0,0)'); sh.addColorStop(1, `rgba(0,0,0,${0.45 * p})`);
+    ctx.fillStyle = sh; ctx.fillRect(x - 36, 0, 36, UH);
+    noBg = false; // the sliding screen brings its own background, so it has a clean edge
+    at(x, 0, hi, hiT);
+  }
+  noBg = false;
+  if (a !== 'final' && b !== 'final') statusBar();
+  ctx.restore();
+}
+// Top of the page → Log: both show Today at that moment, so there's nothing to switch.
+const same = (a, b) => (a === 'hero' && b === 'how0' || a === 'how0' && b === 'hero') && !isSheet('how0');
 let current = activeKey(), since = performance.now(), prev = null, prevSince = 0;
-let last = 0, lastP = -1, drawn = false;
+let drawn = false;
 
 // Redraws (and re-uploads to the GPU) only when the picture can have changed: a screen switch or crossfade,
 // a screen still in its intro animation, or How-it-works scroll progress. A still screen costs nothing.
+// How it works: redraw only when the step's state differs from what's on screen (finer than 1/10000 is invisible).
+let stateNow = '', stateDrawn = '';
 function needsDraw(key, t) {
-  if (!drawn || prev) return true;
+  stateNow = '';
   if (key.startsWith('how')) {
-    const p = window.__how?.p ?? 0;
-    if (p !== lastP) return true;
-    const lp = howLp(+key.slice(3));
-    return key === 'how0' && lp > 0.24 && lp < 0.96; // blinking caret
+    const st = HOW_STEPS[+key.slice(3)].state(howLp(+key.slice(3)));
+    stateNow = key + JSON.stringify(st, (k, v) => (typeof v === 'number' ? Math.round(v * 1e4) : v));
   }
+  if (!drawn || prev) return true;
+  if (stateNow) return stateNow !== stateDrawn;
   return t < (ANIM[key] ?? 0) + 0.1;
 }
 
 function frame(now) {
   requestAnimationFrame(frame);
-  if (now - last < 1000 / 40) return; // 40 fps is plenty for the screen
-  last = now;
   const key = activeKey();
   if (key !== current) {
-    prev = current; prevSince = since;
-    current = key; since = now;
+    if (prev && key === prev && now - since < SWITCH * 1000) {
+      // scrolled back mid-switch: run the same switch backwards from where it is (no restart, no flicker)
+      const done = now - since;
+      [prev, current] = [current, prev];
+      [prevSince, since] = [since, prevSince];
+      since = now - (SWITCH * 1000 - done);
+    } else {
+      prev = same(current, key) ? null : current;
+      prevSince = since;
+      current = key; since = now;
+    }
   }
   const t = (now - since) / 1000;
   if (!needsDraw(current, t)) return;
-  const fade = prev ? easeOut(t / FADE) : 1;
-  if (prev && fade < 1) {
-    drawScreen(prev, (now - prevSince) / 1000);
-    ctx = fadeCtx;
-    drawScreen(current, t);
-    ctx = screenCtx;
-    ctx.globalAlpha = fade;
-    ctx.drawImage(fadeCanvas, 0, 0);
-    ctx.globalAlpha = 1;
+  if (prev && t < SWITCH) {
+    drawSwitch(prev, (now - prevSince) / 1000, current, t, t / SWITCH);
   } else {
     prev = null;
     drawScreen(current, t);
   }
-  lastP = window.__how?.p ?? 0;
+  stateDrawn = stateNow;
   drawn = true;
   texture.needsUpdate = true;
 }

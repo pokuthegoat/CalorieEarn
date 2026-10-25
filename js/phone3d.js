@@ -308,7 +308,8 @@ function slotPath(dt) {
 }
 
 /* ---------- Screen: a canvas the section visuals (js/screens.js) draw into ---------- */
-const SCREEN_W = 540, SCREEN_H = 1170;
+// 2x the old 540×1170: the phone is shown up to ~1000 device pixels tall, so half that resolution got stretched (blurry)
+const SCREEN_W = 1080, SCREEN_H = 2340;
 const screenCanvas = document.createElement('canvas');
 screenCanvas.width = SCREEN_W;
 screenCanvas.height = SCREEN_H;
