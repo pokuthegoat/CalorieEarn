@@ -1,5 +1,5 @@
 // What the 3D phone's screen shows. Draws into the canvas phone3d.js maps onto the display.
-// The screens are redrawn 1:1 from the real app's screenshots (D:\Downloads\CALORIE APP SCREENSHOTS.png), so they
+// The screens are redrawn 1:1 from the real app (screenshots + the 25 Oct walkthrough recording), so they
 // stay sharp on the phone and can animate. All drawing happens in "shot space": 720×1560, the screenshots at 2×,
 // scaled down to the 540×1170 canvas — positions are read straight off the screenshots.
 // The screen follows the section in the middle of the viewport and crossfades when it changes.
@@ -212,18 +212,19 @@ function tabBar(active) {
 }
 function chevRow(y) { icon('chevR', 645, y, 18, 'rgba(255,255,255,.35)', 3); }
 function rowIcon(name, cy) { circle(93, cy, 36, C.soft); icon(name, 93, cy, 30, C.acc, 2.6); }
+const TODAY = 25, TODAY_LONG = 'Sunday 25 October';
 function calendar(top, { dot = null } = {}) {
-  // October 2026 (the 1st is a Thursday); today = 24, later days dimmed
+  // October 2026 (the 1st is a Thursday); today = 25 (a Sunday), later days dimmed
   const xs = [100, 186, 272, 358, 445, 531, 618];
   'MTWTFSS'.split('').forEach((d, i) => text(d, xs[i], top + 57, 19, C.mute, 500, 'center'));
   for (let day = 1; day <= 31; day++) {
     const idx = day + 2, col = idx % 7, row = Math.floor(idx / 7), cy = top + 111 + row * 82.5;
-    if (day === 24) {
+    if (day === TODAY) {
       const d = dot ?? 0;
       if (d > 0) circle(xs[col], cy, 33, `rgba(169,228,140,${0.9 * d})`);
       circle(xs[col], cy, 33, null, C.acc, 3);
-      text('24', xs[col], cy + 9, 26, d > 0.5 ? C.accText : C.text, d > 0.5 ? 600 : 400, 'center');
-    } else text(String(day), xs[col], cy + 9, 26, day > 24 ? C.dim : C.text, 400, 'center');
+      text(String(TODAY), xs[col], cy + 9, 26, d > 0.5 ? C.accText : C.text, d > 0.5 ? 600 : 400, 'center');
+    } else text(String(day), xs[col], cy + 9, 26, day > TODAY ? C.dim : C.text, 400, 'center');
   }
 }
 
@@ -232,7 +233,7 @@ function calendar(top, { dot = null } = {}) {
 
 function today(t = null, { addPress = 0 } = {}) {
   greenBg();
-  rise(t, 0, () => header('Today', 'Saturday 24 October', { chevrons: true }));
+  rise(t, 0, () => header('Today', TODAY_LONG, { chevrons: true }));
   rise(t, 1, () => {
     glass(30, 367, 660, 493);
     circle(360, 473, 57, 'rgba(255,255,255,.1)');
@@ -250,8 +251,8 @@ function today(t = null, { addPress = 0 } = {}) {
     text('Daily check-in', 165, 950, 28, C.text, 600);
     text('Log or repeat a meal, then check in.', 165, 984, 21, C.mute);
     [100, 186, 272, 358, 445, 531, 618].forEach((x, i) => {
-      text('MTWTFSS'[i], x, 1050, 20, i === 5 ? C.text : C.mute, i === 5 ? 600 : 500, 'center');
-      if (i < 6) circle(x, 1092, 27, 'rgba(0,0,0,.14)', i === 5 ? C.acc : 'rgba(255,255,255,.05)', i === 5 ? 3 : 2);
+      text('MTWTFSS'[i], x, 1050, 20, i === 6 ? C.text : C.mute, i === 6 ? 600 : 500, 'center');
+      circle(x, 1092, 27, 'rgba(0,0,0,.14)', i === 6 ? C.acc : 'rgba(255,255,255,.05)', i === 6 ? 3 : 2);
     });
     box(58, 1148, 604, 42, 21, 'rgba(255,255,255,.06)');
     circle(87, 1169, 7, null, C.mute, 2);
@@ -327,7 +328,7 @@ function photoEstimate(t = null, { shown = 1, tap = -1, tapK = 0, addPress = 0 }
   });
   lines(['The salmon is a bit stylized, but the portion and shape are', 'clear'], 37, 1045, 27, 20);
   lines(['Tap a food to adjust it before saving. Estimates can be', 'wrong, especially oils, sauces and portion sizes.'], 37, 1121, 27, 20);
-  lines(['Estimated on your iPhone by Apple Intelligence. Not', 'medical advice.'], 360, 1205, 27, 20, C.mute, 400, 'center');
+  text('Not medical advice.', 360, 1205, 20, C.mute, 400, 'center');
   ctx.fillStyle = 'rgba(255,255,255,.06)'; ctx.fillRect(0, 1289, UW, 2);
   const s = press(addPress), bw = 660 * s, bh = 92 * s;
   const bg = ctx.createLinearGradient(30, 0, 690, 0); bg.addColorStop(0, '#cdf6ae'); bg.addColorStop(1, '#94dc70');
@@ -351,7 +352,7 @@ function history(t = null, { dot = null } = {}) {
     text('Logged', 90, 987, 21, lg > 0.5 && ck < 0.5 ? C.text : C.mute, 500);
     circle(212, 979, 10, C.acc);
     text('Checked in', 234, 987, 21, ck > 0.5 ? C.text : C.mute, 500);
-    if (dot && dot.logged > 0) circle(531, 870, 6, ck > 0.5 ? C.acc : `rgba(150,205,135,${0.6 * dot.logged})`); // small mark under today
+    if (dot && dot.logged > 0) circle(618, 870, 6, ck > 0.5 ? C.acc : `rgba(150,205,135,${0.6 * dot.logged})`); // small mark under today
   });
   rise(t, 2, () => {
     text('Saved meals', 37, 1106, 31, C.text, 600);
@@ -373,7 +374,7 @@ function progress(t = null) {
     text('of 7 days logged', 127, 508, 24, C.mute);
     for (let i = 0; i < 7; i++) {
       const x = 58 + i * 88.4;
-      box(x, 555, 74, 64, 16, i < 6 ? 'rgba(0,0,0,.2)' : 'rgba(255,255,255,.05)');
+      box(x, 555, 74, 64, 16, 'rgba(0,0,0,.2)');
       text('MTWTFSS'[i], x + 37, 652, 19, C.mute, 500, 'center');
     }
     box(58, 688, 604, 42, 21, 'rgba(255,255,255,.07)');
@@ -390,27 +391,20 @@ function progress(t = null) {
   tabBar(2);
 }
 
-function rewards(t = null, { scroll = 0 } = {}) {
+function rewards(t = null) {
   greenBg();
-  ctx.save();
-  ctx.translate(0, -scroll);
   rise(t, 0, () => header('Rewards', 'Recognition for a consistent routine.'));
   rise(t, 1, () => {
     glass(30, 367, 660, 227);
     text('Your rewards', 58, 418, 20, C.dim, 500);
     text('0', 58, 512, 84, C.text, 700);
-    text('Nothing earned yet. No campaign has run.', 58, 561, 21, C.mute);
+    text('Nothing earned yet.', 58, 561, 21, C.mute);
     circle(605, 481, 57, 'rgba(0,0,0,.35)');
     icon('mark', 605, 481, 50, C.acc, 3);
   });
   rise(t, 2, () => {
-    glass(30, 618, 660, 238, 40, 'rgba(150,205,135,.13)');
-    text('No active campaign', 58, 694, 36, C.text, 700);
-    lines(['There’s nothing to join right now. Your diary,', 'check-ins and progress work fully without', 'rewards.'], 58, 752, 32, 23);
-  });
-  rise(t, 3, () => {
-    text('Status', 37, 942, 31, C.text, 600);
-    glass(30, 973, 660, 418, 40, 'rgba(150,205,135,.13)');
+    text('Status', 37, 680, 31, C.text, 600);
+    glass(30, 711, 660, 279, 40, 'rgba(150,205,135,.13)');
     const rowS = (y, ic, title, sub, badge, on) => {
       rowIcon(ic, y + 70);
       text(title, 151, y + 50, 26, C.text, 600);
@@ -419,19 +413,14 @@ function rewards(t = null, { scroll = 0 } = {}) {
       const bw = ctx.measureText(badge).width + 36;
       pill(662 - bw, y + 22, bw, 42, badge, { fill: on ? 'rgba(150,205,135,.18)' : 'rgba(255,255,255,.08)', color: on ? C.acc : C.mute, size: 20, weight: 600 });
     };
-    rowS(973, 'db', 'Rewards service', ['Connected. No campaign', 'published yet.'], 'Connected', true);
-    rowS(1113, 'userc', 'Account', ['Sign in from Settings.', 'Campaigns need an account.'], 'Signed out', false);
-    rowS(1252, 'wallet', 'Token distribution', ['Turned off in this build. No token has', 'launched.'], 'Off', false);
-    text('How campaigns will work', 37, 1474, 31, C.text, 600);
-    glass(30, 1505, 660, 200, 40, 'rgba(150,205,135,.13)');
-    icon('doc', 78, 1554, 28, C.acc, 2.6);
-    text('Published rules first', 120, 1563, 27, C.text, 600);
+    rowS(711, 'db', 'Rewards service', ['Connected.'], 'Connected', true);
+    rowS(851, 'userc', 'Account', ['Sign in from Settings.', 'Campaigns need an account.'], 'Signed out', false);
+    text('How campaigns work', 37, 1074, 31, C.text, 600);
+    glass(30, 1105, 660, 200, 40, 'rgba(150,205,135,.13)');
+    icon('doc', 78, 1154, 28, C.acc, 2.6);
+    text('Published rules first', 120, 1163, 27, C.text, 600);
+    lines(['Each campaign lists its exact daily amount,', 'weekly bonus, dates, timezone and eligibility', 'before you join.'], 120, 1200, 30, 22);
   });
-  ctx.restore();
-  if (scroll > 0) { // content scrolls under the status bar
-    const g = ctx.createLinearGradient(0, 0, 0, 175); g.addColorStop(0, '#2b8a3a'); g.addColorStop(0.78, '#2a8139'); g.addColorStop(1, 'rgba(42,129,57,0)');
-    faded(clamp(scroll / 100), () => { ctx.fillStyle = g; ctx.fillRect(0, 0, UW, 175); });
-  }
   tabBar(3);
 }
 
@@ -468,7 +457,7 @@ function final(t) {
   const g = ctx.createLinearGradient(0, 0, UW, UH);
   g.addColorStop(0, '#0e2410'); g.addColorStop(1, '#030503');
   ctx.fillStyle = g; ctx.fillRect(0, 0, UW, UH);
-  text('Saturday 24 October', 360, 210, 30, 'rgba(255,255,255,.85)', 500, 'center');
+  text(TODAY_LONG, 360, 210, 30, 'rgba(255,255,255,.85)', 500, 'center');
   text('9:41', 360, 420, 200, C.text, 600, 'center');
   const n = easeOut((t - 0.5) / 0.7);
   faded(n, () => {
@@ -501,7 +490,7 @@ function howCheckin(lp) {
 function howEarn() { rewards(); }
 
 /* ---------- which screen, and switching ---------- */
-const SECTIONS = ['hero', 'how', 'logging', 'nutrition', 'habits', 'rewards', 'treasury', 'privacy', 'final']
+const SECTIONS = ['hero', 'how', 'logging', 'nutrition', 'habits', 'rewards', 'privacy', 'final']
   .map((id) => document.getElementById(id));
 const HOW_STEPS = [howLog, howReview, howCheckin, howEarn];
 
@@ -513,10 +502,14 @@ new ResizeObserver(measureTops).observe(document.body);
 addEventListener('load', measureTops);
 
 function activeKey() {
-  const mid = scrollY + innerHeight / 2;
-  let i = 0;
-  tops.forEach((t, j) => { if (t <= mid) i = j; });
-  const id = SECTIONS[i].id;
+  // on phones the 3D phone sits in a slot per section and says which one it's in (phone3d.js)
+  let id = window.__phoneSection;
+  if (!id) {
+    const mid = scrollY + innerHeight / 2;
+    let i = 0;
+    tops.forEach((t, j) => { if (t <= mid) i = j; });
+    id = SECTIONS[i].id;
+  }
   if (id === 'how') return 'how' + (window.__how?.step ?? 0);
   return id;
 }
@@ -527,12 +520,11 @@ const DRAW = {
   nutrition: (t) => progress(t),
   habits: (t) => history(t),
   rewards: (t) => rewards(t),
-  treasury: (t) => rewards(null, { scroll: 205 * easeInOut((t - 0.15) / 1.1) }),
   privacy: (t) => settings(null, { numbers: 1 - span(t, 0.7, 1.0) }),
   final,
 };
 // How long each screen keeps animating after it appears (s). After that it's a still image.
-const ANIM = { logging: 0.8, treasury: 1.3, privacy: 1.1, final: 1.4 };
+const ANIM = { logging: 0.8, privacy: 1.1, final: 1.4 };
 function howLp(k) { return clamp((window.__how?.p ?? 0) * 4 - k); }
 function drawScreen(key, t) {
   ctx.save();

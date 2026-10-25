@@ -76,8 +76,7 @@ const PATH = [
   { el: '#nutrition', f: 0.5,  x: 0.24,  a: [-0.06, 0, 0.08], spin: 1 },
   { el: '#habits',    f: 0.5,  x: -0.24, a: [0.05, 0, -0.1] },
   { el: '#rewards',   f: 0.5,  x: 0.24,  a: [-0.08, 0, 0.05], spin: -1 },
-  { el: '#treasury',  f: 0.5,  x: -0.24, a: [0.1, 0, 0.08] },
-  { el: '#privacy',   f: 0.5,  x: 0.24,  a: [-0.05, 0, -0.06] },
+  { el: '#privacy',   f: 0.5,  x: -0.24, a: [0.1, 0, 0.08] },
   { el: '.final-spot', box: true, a: [0, 0, 0] },
 ];
 const BASE_SCALE = 0.85;
@@ -138,6 +137,7 @@ function measure() {
 
   const narrowScale = Math.min(1, (view.visW * 0.8) / (MODEL_HEIGHT * 0.85));
   const pxPerWorld = view.h / view.visH;
+  measureSlots(pxPerWorld);
   const maxScroll = document.documentElement.scrollHeight - view.h;
   const knots = PATH.map((p, i) => {
     const r = document.querySelector(p.el).getBoundingClientRect();
@@ -218,6 +218,7 @@ let lastAt = 0; // scroll position of the last path point: past it, the phone sc
 let snapped = false;
 
 function updatePath(dt) {
+  if (mobile) { slotPath(dt); return; }
   const k = snapped ? 1 - Math.exp(-PATH_EASE * dt) : 1;
   snapped = true;
   const prevX = cur.x;
@@ -249,6 +250,61 @@ function updatePath(dt) {
   if (PATH_DEBUG) window.__phoneY = view.h / 2 - (cur.y + away) * view.h; // phone centre on screen, px from top
   anchor.scale.setScalar(cur.s);
   anchor.rotation.set(cur.rx, cur.ry, cur.rz + cur.bank);
+}
+
+/* ---------- Phones: the phone sits in its own slot in each section ---------- */
+// On a phone screen there's no room beside the text, so a flight path would always cover it. Instead every
+// section has an empty .m-spot (shown only at the mobile breakpoint) and the phone stays glued to whichever slot
+// is nearest the middle of the screen, moving exactly with the page. When that changes it flies over to the new
+// slot (an offset that decays), and the screen switches with it (window.__phoneSection).
+const mobileMQ = matchMedia('(max-width: 900px)');
+let mobile = false, slots = [], slot = null, slotFly = 0;
+const pin = { top: 0, len: 0 };
+const SLOT_FLY = 5; // how quickly it reaches a new slot (1/s)
+function measureSlots(pxPerWorld) {
+  mobile = mobileMQ.matches;
+  window.__phoneSection = null;
+  if (!mobile) { slots = []; return; }
+  const how = document.getElementById('how');
+  const hr = how.getBoundingClientRect();
+  pin.top = hr.top + scrollY;
+  pin.len = hr.height - view.h;
+  const pinEl = how.querySelector('.how-pin');
+  slots = [...document.querySelectorAll('.m-spot, .final-spot')].map((el) => {
+    const r = el.getBoundingClientRect();
+    const s = THREE.MathUtils.clamp(r.height / (MODEL_HEIGHT * pxPerWorld), 0.3, 1);
+    const section = el.closest('section').id;
+    if (pinEl.contains(el)) { // inside the pinned How it works: position relative to the pin, minus its glide
+      return { section, s, pinned: true, off: r.top - pinEl.getBoundingClientRect().top - (window.__how?.shift ?? 0) + r.height / 2 };
+    }
+    return { section, s, pinned: false, y: r.top + scrollY + r.height / 2 };
+  });
+}
+function slotY(sl, sc) {
+  if (!sl.pinned) return sl.y - sc;
+  return pin.top - sc + THREE.MathUtils.clamp(sc - pin.top, 0, pin.len) + sl.off + (window.__how?.shift ?? 0);
+}
+function slotPath(dt) {
+  const sc = scrollY;
+  let best = slots[0], bestY = 0, bd = Infinity;
+  for (const sl of slots) {
+    const y = slotY(sl, sc), d = Math.abs(y - view.h / 2);
+    if (d < bd) { bd = d; best = sl; bestY = y; }
+  }
+  if (!best) return;
+  if (slot && best !== slot) { // fly from where it is now
+    slotFly = (view.h / 2 - cur.y * view.h) - bestY;
+  }
+  if (!slot) cur.s = best.s;
+  slot = best;
+  window.__phoneSection = best.section;
+  const k = 1 - Math.exp(-SLOT_FLY * dt);
+  slotFly -= slotFly * k;
+  cur.s += (best.s - cur.s) * k;
+  cur.y = (view.h / 2 - (bestY + slotFly)) / view.h;
+  anchor.position.set(0, cur.y * view.visH, 0);
+  anchor.scale.setScalar(cur.s);
+  anchor.rotation.set(0.04, 0, 0);
 }
 
 /* ---------- Screen: a canvas the section visuals (js/screens.js) draw into ---------- */

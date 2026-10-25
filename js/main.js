@@ -66,11 +66,6 @@
     });
   });
 
-  // Placeholders until the official Telegram / development links exist.
-  document.querySelectorAll('.tg-link, .dev-link').forEach(a => a.addEventListener('click', e => {
-    if (a.getAttribute('href') === '#') e.preventDefault();
-  }));
-
   /* ---------- Contract address buttons: short in the pill, full in the drop-down, copies on click ---------- */
   const CA = '0000000000000000000000000000000000000000pump'; // placeholder until the real address exists
   document.querySelectorAll('.ca').forEach(btn => {
@@ -148,7 +143,7 @@
   const loopLine = loopEl.querySelector('.loop-line');
   const steps = [...loopEl.querySelectorAll('li')];
   const nums = steps.map(li => li.querySelector('.n'));
-  window.__how = { p: 0, step: 0 }; // read by the phone screen visuals
+  window.__how = { p: 0, step: 0, shift: 0 }; // read by the phone screen visuals
   // Soft pin: instead of freezing the instant the section pins, the content keeps gliding up and slows to a
   // stop over EASE_IN of scroll (speed eases from page speed to 0, landing with no jolt), then speeds back up the
   // same way over the last EASE_IN before the section lets go. It sits R/3 low beforehand so it's centred while held.
@@ -167,7 +162,9 @@
   let howStep = -1;
   function updateHow(y) {
     const d = y - M.howTop, L = M.howH - M.vh;
-    howContent.style.transform = `translate3d(0,${softPin(d, L).toFixed(1)}px,0)`;
+    const shift = softPin(d, L);
+    howContent.style.transform = `translate3d(0,${shift.toFixed(1)}px,0)`;
+    window.__how.shift = shift; // the phone's slot inside the pin moves with it (mobile)
     const p = clamp(d / L, 0, 1);
     const step = Math.min(steps.length - 1, Math.floor(p * steps.length));
     if (step !== howStep) {
@@ -268,7 +265,7 @@
 
   /* ---------- Background: tone follows the section in view; drawings drift slowly ---------- */
   // How green the background is around each section (0 = black page, 1 = deep green). Eased between section centres.
-  const TONE = { hero: 0, how: 0.25, logging: 0.55, nutrition: 0.9, habits: 0.45, rewards: 1, treasury: 0.6, privacy: 0.3, final: 0.7 };
+  const TONE = { hero: 0, how: 0.25, logging: 0.55, nutrition: 0.9, habits: 0.45, rewards: 1, privacy: 0.3, final: 0.7 };
   const toneEl = document.getElementById('bgTone');
   const toneSecs = Object.keys(TONE).map(id => document.getElementById(id));
   const arts = [...document.querySelectorAll('.bg-art')];

@@ -188,12 +188,13 @@ main,.foot{position:relative;z-index:1}
 
 .final{padding-bottom:200px}
 .final-spot{height:min(52vh,520px);margin:0 auto 48px}
+.m-spot{display:none}
 .final h2{font-size:64px;line-height:1.02;max-width:14em;margin:28px auto 22px}
 .final .lead{max-width:32em;margin:0 auto 40px}
 
 
 /* ==========================================================
-   VISUALS: cards, compare, flow (flat: solid fills + 1px borders, no glows or shadows)
+   VISUALS: cards, compare (flat: solid fills + 1px borders, no glows or shadows)
    (all animation is transform/opacity only, so it stays on the compositor)
    ========================================================== */
 .hero h1 .g{color:var(--accent)}
@@ -223,12 +224,6 @@ main,.foot{position:relative;z-index:1}
 .cmp.no li{color:var(--muted);text-decoration:line-through;text-decoration-color:rgba(156,169,149,.45)}
 .cmp.no li::before{background:rgba(255,255,255,.07) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M7 7l6 6M13 7l-6 6' fill='none' stroke='%239CA995' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E") center/16px no-repeat}
 
-/* treasury → campaigns → users */
-.flow{position:relative;display:grid;gap:12px;margin-top:34px}
-.flow-line{position:absolute;left:41px;top:40px;bottom:40px;width:2px;border-radius:2px;background:var(--line)}
-.flow .mini{z-index:1}
-.flow .later{border-style:dashed;background:transparent}
-.flow .later .mi{background:rgba(255,255,255,.05);color:var(--muted)}
 .minis.stack{grid-template-columns:1fr;margin-top:32px}
 
 /* ---------- Text motion (Coldly's, without the blur) ---------- */
@@ -345,6 +340,26 @@ html.intro-on,html.intro-on body{overflow:hidden}
   .minis.three .mini{padding:14px;gap:12px}
   .minis.three .mini b{font-size:14px}
   .compare{grid-template-columns:1fr}
+  /* the 3D phone gets its own slot in each section instead of flying over the text (js/phone3d.js) */
+  .m-spot{display:block;height:min(60svh,500px);margin:8px 0 40px}
+  .hero{align-items:flex-start;padding-top:calc(var(--nav-h) + 28px)}
+  .hero h1{margin:20px 0 0}
+  .hero .m-spot{height:min(52svh,440px);margin:20px 0 28px}
+  .how-pin{align-items:stretch;padding-bottom:20px}
+  .how-pin>.wrap,.how .col{display:flex;flex-direction:column;height:100%}
+  .how .eyebrow{margin-top:20px}
+  .how .m-spot{flex:1 1 0;min-height:0;height:auto;margin:16px 0 4px}
+  .loop{margin-top:0}
+  .loop li{grid-template-columns:36px 1fr;gap:16px;padding:7px 0}
+  .loop .n{width:36px;height:36px;font-size:14px}
+  .loop h3{font-size:22px;line-height:36px}
+  .loop .d>p{font-size:15px;line-height:1.35}
+  .loop-line{left:17px}
+}
+/* short phones (SE size): give How it works' phone a bit more room */
+@media (max-width:900px) and (max-height:720px){
+  .how .eyebrow{display:none}
+  .how h2{font-size:30px;margin-top:12px}
 }
 
 @media (prefers-reduced-motion:reduce){
