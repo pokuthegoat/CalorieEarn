@@ -65,7 +65,7 @@ p{font-size:16px;line-height:1.35;font-weight:300;letter-spacing:-.03em;color:va
 /* ---------- Nav: floats free at the top, morphs into a compact "island" capsule once you scroll ---------- */
 .nav{position:fixed;inset:0 0 auto;z-index:50;display:flex;justify-content:center;pointer-events:none}
 .nav-in{pointer-events:auto;width:100%;max-width:1240px;height:var(--nav-h);margin-top:0;padding:0 32px;display:flex;align-items:center;justify-content:space-between;gap:24px;border:1px solid transparent;border-radius:28px;background:rgba(10,18,9,0);transition:max-width .7s var(--ease),height .6s var(--ease),margin-top .6s var(--ease),padding .6s var(--ease),background-color .5s ease,border-color .5s ease}
-.nav.compact .nav-in{max-width:1000px;height:58px;margin-top:12px;padding:0 8px 0 10px;background:rgba(10,18,9,.96);border-color:var(--line)}
+.nav.compact .nav-in{max-width:1240px;height:58px;margin-top:12px;padding:0 8px 0 10px;background:rgba(10,18,9,.96);border-color:var(--line)}
 .nav .btn{height:40px;padding:12px 12px 12px 18px;font-size:14px}
 .menu{display:flex;align-items:center;gap:10px}
 .links{margin-right:6px}
@@ -81,10 +81,6 @@ p{font-size:16px;line-height:1.35;font-weight:300;letter-spacing:-.03em;color:va
 .brand:focus-visible{outline:2px solid var(--accent);outline-offset:4px;border-radius:8px}
 /* scroll progress: a ring around the logo, like the app's calorie ring */
 .brand-ring{position:relative;width:44px;height:44px;flex:none;display:flex;align-items:center;justify-content:center}
-.brand-ring svg{position:absolute;inset:0;width:44px;height:44px;transform:rotate(-90deg)}
-.brand-ring circle{fill:none;stroke-width:2.5}
-.ring-track{stroke:var(--line)}
-.ring-fill{stroke:var(--accent);stroke-linecap:round;stroke-dasharray:125.66;stroke-dashoffset:125.66}
 .brand-ring img{width:30px;height:30px;border-radius:50%}
 /* the logo mark on its own: just the crossing-arrow lines, no tile behind them */
 .brand-ring .brand-mark{position:static;width:20px;height:20px;transform:none;fill:var(--accent)}
@@ -115,10 +111,6 @@ p{font-size:16px;line-height:1.35;font-weight:300;letter-spacing:-.03em;color:va
 .ca.copied .ca-v,.ca.copied .ca-ico{color:var(--bg)}
 .ca.copied .i-copy{opacity:0;transform:scale(.3)}
 .ca.copied .i-tick{opacity:1;transform:none}
-.ca-tip{position:absolute;top:calc(100% + 12px);left:50%;display:flex;flex-direction:column;gap:6px;padding:12px 14px;border-radius:14px;background:#0d170c;border:1px solid var(--line);white-space:nowrap;font-size:13px;color:var(--text);text-align:left;opacity:0;transform:translate(-50%,-6px);pointer-events:none;transition:opacity .25s ease,transform .4s var(--ease)}
-.ca-tip small{font-size:12px;color:var(--muted)}
-.ca:hover .ca-tip,.ca:focus-visible .ca-tip{opacity:1;transform:translate(-50%,0)}
-.ca.copied .ca-tip small{color:var(--accent)}
 .sheet-row{display:flex;align-items:center;gap:10px;margin-top:16px}
 .foot-icons{display:flex;gap:10px}
 
@@ -255,6 +247,7 @@ body{background:transparent}
 .intro-ring{position:relative;width:120px;height:120px;display:flex;align-items:center;justify-content:center}
 .intro-ring svg{position:absolute;inset:0;width:120px;height:120px;transform:rotate(-90deg)}
 .intro-ring circle{fill:none;stroke-width:2.5}
+.intro-ring .ring-track{stroke:var(--line)}
 .intro-fill{stroke:var(--accent);stroke-linecap:round;stroke-dasharray:351.86;stroke-dashoffset:351.86}
 .intro-ring img{width:72px;height:72px;border-radius:50%}
 .intro-ring .intro-mark{position:static;width:64px;height:64px;transform:none;fill:var(--accent)}
@@ -264,6 +257,11 @@ html.intro-on,html.intro-on body{overflow:hidden}
 .final-actions{display:flex;justify-content:center;flex-wrap:wrap;gap:12px}
 .btn-big{height:56px;padding:18px 18px 18px 22px;font-size:18px;gap:10px}
 .btn-brand{width:18px;height:18px;flex:none}
+.btn .btn-brand{position:relative}
+.nav .nav-dl{padding:12px 16px 12px 14px;gap:7px}
+.nav .nav-dl .btn-brand{width:16px;height:16px}
+.btn-row-2{margin-top:12px}
+.final-actions-2{margin-top:12px}
 .final-ca{display:flex;flex-direction:column;align-items:center;gap:12px;margin-top:40px}
 .final-ca-label{font-size:12px;font-weight:500;letter-spacing:.3em;text-transform:uppercase;color:var(--dim)}
 .ca-big{height:52px;padding:0 18px 0 7px;border-radius:26px;font-size:16px}
@@ -293,7 +291,11 @@ html.intro-on,html.intro-on body{overflow:hidden}
 .foot-credit{margin-top:12px;font-size:12px;color:var(--dim)}
 .foot-credit a{color:inherit;text-decoration:underline;text-decoration-color:rgba(156,169,149,.35);text-underline-offset:2px;transition:color .25s ease}
 .foot-credit a:hover{color:var(--text)}
-.foot-bottom{display:flex;justify-content:space-between;align-items:center;margin-top:72px;padding-top:28px;border-top:1px solid var(--line);padding-bottom:48px;font-size:14px;color:var(--dim)}
+.foot-bottom{display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:72px;padding-top:28px;border-top:1px solid var(--line);padding-bottom:48px;font-size:14px;color:var(--muted);text-align:center}
+.foot-bottom p,.legal-links{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 22px;font-size:14px;color:var(--muted)}
+.foot-bottom a{color:rgba(246,248,244,.8);text-decoration:none;transition:color .25s ease}
+.foot-bottom a:hover{color:#fff}
+.foot-bottom p.legal-addr{font-size:12.5px;color:var(--dim)}
 .to-top{font-size:14px}
 .to-top span{display:inline-block;transition:transform .35s var(--ease)}
 .to-top:hover span{transform:translateY(-3px)}
@@ -312,7 +314,7 @@ html.intro-on,html.intro-on body{overflow:hidden}
   .nav.open{background:rgba(3,5,3,.97)}
   .sheet a:not(.btn){padding:14px 0;font-size:28px;font-weight:500;letter-spacing:-.03em;text-decoration:none;border-bottom:1px solid var(--line);opacity:0;transform:translateY(-8px);transition:opacity .4s ease,transform .5s var(--ease)}
   .nav.open .sheet a:not(.btn){opacity:1;transform:none}
-  .sheet a:nth-child(2){transition-delay:.04s}.sheet a:nth-child(3){transition-delay:.08s}.sheet a:nth-child(4){transition-delay:.12s}
+  .sheet a:nth-child(2){transition-delay:.04s}.sheet a:nth-child(3){transition-delay:.08s}.sheet a:nth-child(4){transition-delay:.12s}.sheet a:nth-child(5){transition-delay:.16s}
   .sheet .btn{margin-top:18px;align-self:flex-start;height:48px;padding:16px 16px 16px 24px;font-size:16px}
   .wrap{padding:0 16px}
   h1{font-size:44px}

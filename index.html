@@ -24,6 +24,8 @@
 <!-- Arrow-in-circle used by every button -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <symbol id="arrow" viewBox="0 0 20 20"><path d="M6 10h8m-3.5-3.5L14 10l-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-android" viewBox="0 0 24 24"><path fill="currentColor" d="M18.4395 5.5586c-.675 1.1664-1.352 2.3318-2.0274 3.498-.0366-.0155-.0742-.0286-.1113-.043-1.8249-.6957-3.484-.8-4.42-.787-1.8551.0185-3.3544.4643-4.2597.8203-.084-.1494-1.7526-3.021-2.0215-3.4864a1.1451 1.1451 0 0 0-.1406-.1914c-.3312-.364-.9054-.4859-1.379-.203-.475.282-.7136.9361-.3886 1.5019 1.9466 3.3696-.0966-.2158 1.9473 3.3593.0172.031-.4946.2642-1.3926 1.0177C2.8987 12.176.452 14.772 0 18.9902h24c-.119-1.1108-.3686-2.099-.7461-3.0683-.7438-1.9118-1.8435-3.2928-2.7402-4.1836a12.1048 12.1048 0 0 0-2.1309-1.6875c.6594-1.122 1.312-2.2559 1.9649-3.3848.2077-.3615.1886-.7956-.0079-1.1191a1.1001 1.1001 0 0 0-.8515-.5332c-.5225-.0536-.9392.3128-1.0488.5449zm-.0391 8.461c.3944.5926.324 1.3306-.1563 1.6503-.4799.3197-1.188.0985-1.582-.4941-.3944-.5927-.324-1.3307.1563-1.6504.4727-.315 1.1812-.1086 1.582.4941zM7.207 13.5273c.4803.3197.5506 1.0577.1563 1.6504-.394.5926-1.1038.8138-1.584.4941-.48-.3197-.5503-1.0577-.1563-1.6504.4008-.6021 1.1087-.8106 1.584-.4941z"/></symbol>
+  <symbol id="i-testflight" viewBox="0 0 24 24"><g fill="currentColor" stroke="currentColor" stroke-width=".6" stroke-linejoin="round"><path d="M11.45 2.3h1.1l1.05 2.7v3.6l-1.05 1.9h-1.1l-1.05-1.9V5z"/><path d="M11.45 2.3h1.1l1.05 2.7v3.6l-1.05 1.9h-1.1l-1.05-1.9V5z" transform="rotate(120 12 12)"/><path d="M11.45 2.3h1.1l1.05 2.7v3.6l-1.05 1.9h-1.1l-1.05-1.9V5z" transform="rotate(240 12 12)"/></g></symbol>
   <symbol id="tg" viewBox="0 0 24 24"><path fill="currentColor" d="M21.4 4.3 2.9 11.4c-1.3.5-1.2 1.2-.2 1.5l4.7 1.5 1.8 5.6c.2.6.1.9.8.9.5 0 .7-.2 1-.5l2.3-2.2 4.7 3.5c.9.5 1.5.2 1.7-.8l3.1-14.6c.3-1.3-.5-1.8-1.4-1.5ZM9.2 14.1l9.2-5.8c.4-.3.8-.1.5.2l-7.6 6.9-.3 3.2-1.8-4.5Z"/></symbol>
   <symbol id="x-logo" viewBox="0 0 24 24"><path fill="currentColor" d="M17.75 3h3.07l-6.7 7.66L22 21h-6.17l-4.83-6.32L5.47 21H2.4l7.17-8.2L2 3h6.33l4.37 5.77L17.75 3Zm-1.08 16.18h1.7L7.4 4.73H5.58l11.09 14.45Z"/></symbol>
   <symbol id="copy" viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M15 9V6.5A2.5 2.5 0 0 0 12.5 4h-6A2.5 2.5 0 0 0 4 6.5v6A2.5 2.5 0 0 0 6.5 15H9" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
@@ -48,10 +50,8 @@
 
 <header class="nav">
   <div class="nav-in">
-    <!-- the ring around the logo fills as you scroll down the page -->
     <a class="brand" href="#top" data-scroll>
       <span class="brand-ring" aria-hidden="true">
-        <svg viewBox="0 0 44 44"><circle class="ring-track" cx="22" cy="22" r="20"/><circle class="ring-fill" id="ringFill" cx="22" cy="22" r="20"/></svg>
         <svg class="brand-mark" viewBox="0 0 1000 1000"><use href="#ce-mark"/></svg>
       </span>
       <span class="brand-name">CalorieEarn</span>
@@ -62,9 +62,11 @@
         <a href="#logging" data-scroll data-sec="logging">Features</a>
         <a href="#rewards" data-scroll data-sec="rewards">Rewards</a>
         <a href="#privacy" data-scroll data-sec="privacy">Privacy</a>
+        <a href="/privacy">Docs</a>
       </div>
-      <button class="ca" type="button" aria-label="Copy contract address"><span class="ca-tag">CA</span><span class="ca-v"></span><span class="ca-ico"><svg class="i-copy"><use href="#copy"/></svg><svg class="i-tick"><use href="#tick"/></svg></span></button>
       <a class="icon-btn" href="https://x.com/CalorieEarn" target="_blank" rel="noopener" aria-label="CalorieEarn on X"><svg><use href="#x-logo"/></svg></a>
+      <a class="btn btn-ghost nav-dl" href="/downloads/CalorieEarn.apk" download><svg class="btn-brand"><use href="#i-android"/></svg><span class="btn-label">Download APK</span></a>
+      <a class="btn btn-light nav-dl" href="https://testflight.apple.com/join/6yrk3PQw" target="_blank" rel="noopener"><svg class="btn-brand"><use href="#i-testflight"/></svg><span class="btn-label">Join TestFlight</span></a>
       <a class="btn btn-accent tg-link" href="https://t.me/CalorieEarn" target="_blank" rel="noopener">
         <span class="btn-label">Join Telegram</span>
         <span class="btn-ico"><svg><use href="#arrow"/></svg><svg><use href="#arrow"/></svg></span>
@@ -77,12 +79,14 @@
     <a href="#logging" data-scroll>Features</a>
     <a href="#rewards" data-scroll>Rewards</a>
     <a href="#privacy" data-scroll>Privacy</a>
+    <a href="/privacy">Docs</a>
+    <a class="btn btn-light sheet-dl" href="https://testflight.apple.com/join/6yrk3PQw" target="_blank" rel="noopener"><svg class="btn-brand"><use href="#i-testflight"/></svg><span class="btn-label">Join TestFlight</span><span class="btn-ico"><svg><use href="#arrow"/></svg><svg><use href="#arrow"/></svg></span></a>
+    <a class="btn btn-ghost sheet-dl" href="/downloads/CalorieEarn.apk" download><svg class="btn-brand"><use href="#i-android"/></svg><span class="btn-label">Download APK</span><span class="btn-ico"><svg><use href="#arrow"/></svg><svg><use href="#arrow"/></svg></span></a>
     <a class="btn btn-accent tg-link" href="https://t.me/CalorieEarn" target="_blank" rel="noopener">
       <span class="btn-label">Join Telegram</span>
       <span class="btn-ico"><svg><use href="#arrow"/></svg><svg><use href="#arrow"/></svg></span>
     </a>
-    <div class="sheet-row"><button class="ca ca-full" type="button" aria-label="Copy contract address"><span class="ca-tag">CA</span><span class="ca-v"></span><span class="ca-ico"><svg class="i-copy"><use href="#copy"/></svg><svg class="i-tick"><use href="#tick"/></svg></span></button>
-      <a class="icon-btn" href="https://x.com/CalorieEarn" target="_blank" rel="noopener" aria-label="CalorieEarn on X"><svg><use href="#x-logo"/></svg></a></div>
+    <div class="sheet-row"><a class="icon-btn" href="https://x.com/CalorieEarn" target="_blank" rel="noopener" aria-label="CalorieEarn on X"><svg><use href="#x-logo"/></svg></a></div>
   </div>
 </header>
 
@@ -102,7 +106,11 @@
         <div class="m-spot" aria-hidden="true"></div>
         <p class="lead">CalorieEarn helps people log meals, understand their nutrition and build a consistent daily habit. Eligible users can earn $CalorieEarn through reward campaigns for consistent logging and daily check-ins.</p>
         <div class="btn-row">
-          <a class="btn btn-light tg-link" href="https://t.me/CalorieEarn" target="_blank" rel="noopener">
+          <a class="btn btn-light" href="https://testflight.apple.com/join/6yrk3PQw" target="_blank" rel="noopener"><svg class="btn-brand"><use href="#i-testflight"/></svg><span class="btn-label">Join TestFlight</span><span class="btn-ico"><svg><use href="#arrow"/></svg><svg><use href="#arrow"/></svg></span></a>
+          <a class="btn btn-ghost" href="/downloads/CalorieEarn.apk" download><svg class="btn-brand"><use href="#i-android"/></svg><span class="btn-label">Download APK</span><span class="btn-ico"><svg><use href="#arrow"/></svg><svg><use href="#arrow"/></svg></span></a>
+        </div>
+        <div class="btn-row btn-row-2">
+          <a class="btn btn-ghost tg-link" href="https://t.me/CalorieEarn" target="_blank" rel="noopener">
             <span class="btn-label">Join Telegram</span>
             <span class="btn-ico"><svg><use href="#arrow"/></svg><svg><use href="#arrow"/></svg></span>
           </a>
@@ -258,12 +266,16 @@
       <h2>CalorieEarn is on the App Store.</h2>
       <p class="lead">Log your first meal and check in today.</p>
       <div class="final-actions">
+        <a class="btn btn-light btn-big" href="https://testflight.apple.com/join/6yrk3PQw" target="_blank" rel="noopener"><svg class="btn-brand"><use href="#i-testflight"/></svg><span class="btn-label">Join TestFlight</span><span class="btn-ico"><svg><use href="#arrow"/></svg><svg><use href="#arrow"/></svg></span></a>
+        <a class="btn btn-ghost btn-big" href="/downloads/CalorieEarn.apk" download><svg class="btn-brand"><use href="#i-android"/></svg><span class="btn-label">Download APK</span><span class="btn-ico"><svg><use href="#arrow"/></svg><svg><use href="#arrow"/></svg></span></a>
+      </div>
+      <div class="final-actions final-actions-2">
         <a class="btn btn-accent btn-big tg-link" href="https://t.me/CalorieEarn" target="_blank" rel="noopener">
           <svg class="btn-brand"><use href="#tg"/></svg>
           <span class="btn-label">Join Telegram</span>
           <span class="btn-ico"><svg><use href="#arrow"/></svg><svg><use href="#arrow"/></svg></span>
         </a>
-        <a class="btn btn-light btn-big" href="https://x.com/CalorieEarn" target="_blank" rel="noopener">
+        <a class="btn btn-ghost btn-big" href="https://x.com/CalorieEarn" target="_blank" rel="noopener">
           <svg class="btn-brand"><use href="#x-logo"/></svg>
           <span class="btn-label">Follow on X</span>
           <span class="btn-ico"><svg><use href="#arrow"/></svg><svg><use href="#arrow"/></svg></span>
@@ -304,9 +316,17 @@
         <a href="https://x.com/CalorieEarn" target="_blank" rel="noopener">X</a>
       </div>
     </div>
+    <!-- legal footer -->
     <div class="foot-bottom">
-      <span>© 2026 CalorieEarn</span>
-      <a class="to-top" href="#top" data-scroll>Back to top <span>↑</span></a>
+      <nav class="legal-links" aria-label="Legal">
+        <a href="mailto:support.calorieearn@gmail.com">Support</a>
+        <a href="/terms">Terms</a>
+        <a href="/privacy">Privacy</a>
+        <a href="/cookies">Cookies</a>
+        <a href="/contact">Contact</a>
+      </nav>
+      <p><a href="https://x.com/CalorieEarn" target="_blank" rel="noopener">@CalorieEarn</a><span>© 2026 CalorieEarn LLC</span><a class="to-top" href="#top" data-scroll>Back to top <span>↑</span></a></p>
+      <p class="legal-addr">CalorieEarn LLC · 1309 Coffeen Avenue STE 1200, Sheridan, WY 82801, United States</p>
     </div>
   </div>
 </footer>

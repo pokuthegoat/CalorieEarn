@@ -66,14 +66,12 @@
     });
   });
 
-  /* ---------- Contract address buttons: short in the pill, full in the drop-down, copies on click ---------- */
+  /* ---------- Contract address button (closing section): shows the full address, copies on click ---------- */
   const CA = '0000000000000000000000000000000000000000pump'; // placeholder until the real address exists
   document.querySelectorAll('.ca').forEach(btn => {
     const v = btn.querySelector('.ca-v');
-    const label = btn.classList.contains('ca-big') ? CA : CA.slice(0, 4) + '…' + CA.slice(-4); // the big one shows it all
+    const label = CA;
     v.textContent = label;
-    if (btn.closest('.menu')) btn.insertAdjacentHTML('beforeend', `<span class="ca-tip">${CA}<small>Click to copy</small></span>`);
-    const tip = btn.querySelector('.ca-tip small');
     const fallbackCopy = () => {
       const t = document.createElement('textarea');
       t.value = CA; t.style.position = 'fixed'; t.style.opacity = '0';
@@ -85,12 +83,10 @@
       else fallbackCopy();
       btn.classList.add('copied');
       v.textContent = 'Copied';
-      if (tip) tip.textContent = 'Copied to clipboard';
       clearTimeout(btn._t);
       btn._t = setTimeout(() => {
         btn.classList.remove('copied');
         v.textContent = label;
-        if (tip) tip.textContent = 'Click to copy';
       }, 1600);
     });
   });
@@ -126,12 +122,8 @@
 
   let M; // cached layout (see measure() near the end)
 
-  /* ---------- Scroll progress: the ring around the logo fills; the nav becomes an island past the hero ---------- */
-  const ring = document.getElementById('ringFill');
-  const RING = 2 * Math.PI * 20;
+  /* ---------- Scroll: the nav becomes an island past the hero ---------- */
   function updateProgress(y) {
-    const p = M.docMax > 0 ? clamp(y / M.docMax, 0, 1) : 0;
-    ring.style.strokeDashoffset = (RING * (1 - p)).toFixed(2);
     navEl.classList.toggle('compact', y > M.heroH * 0.5);
   }
 
@@ -299,7 +291,7 @@
       vh: innerHeight,
       docMax: document.documentElement.scrollHeight - innerHeight,
       heroH: heroEl.offsetHeight,
-      nav: navSecs.map(pageTop),
+      nav: navSecs.map(s => (s ? pageTop(s) : Infinity)), // Docs has no section
       final: pageTop(afterNav),
       howTop: pageTop(how), howH: how.offsetHeight,
       fills: fills.map(f => ({ top: pageTop(f.el), h: f.el.offsetHeight })),
