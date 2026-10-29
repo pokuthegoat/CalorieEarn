@@ -67,7 +67,7 @@
   });
 
   /* ---------- Contract address buttons (hero + closing section): shows the full address, copies on click ---------- */
-  const CA = '0000000000000000000000000000000000000000pump'; // placeholder until the real address exists
+  const CA = '2R6pcAGoGcLcTYhKebRLL5UTs9z6RBLfsPqKGf8qzRfi';
   document.querySelectorAll('.ca').forEach(btn => {
     const v = btn.querySelector('.ca-v');
     const label = CA;
@@ -255,9 +255,75 @@
     });
   }
 
+  /* ---------- App cards: rise in on view, then play their own little moment once ---------- */
+  function countUp(el) {
+    const [from, to] = el.dataset.count.split(' ').map(Number);
+    const dp = (el.dataset.count.split(' ')[1].split('.')[1] || '').length;
+    if (reduce) { el.textContent = to.toFixed(dp); return; }
+    const t0 = performance.now(), dur = 1100;
+    const step = now => {
+      const k = clamp((now - t0) / dur, 0, 1), e = 1 - (1 - k) ** 3;
+      el.textContent = (from + (to - from) * e).toFixed(dp);
+      if (k < 1) requestAnimationFrame(step);
+    };
+    el.textContent = from.toFixed(dp);
+    requestAnimationFrame(step);
+  }
+  // numbers wait at their start value until their card plays
+  if (!reduce) document.querySelectorAll('[data-count]').forEach(el => {
+    const [from, to] = el.dataset.count.split(' ');
+    el.textContent = Number(from).toFixed((to.split('.')[1] || '').length);
+  });
+  const later = (ms, fn) => setTimeout(fn, reduce ? 0 : ms);
+  // Each card's own steps after it rises in (the staggered fades themselves are CSS)
+  const PLAY = {
+    // the search types "Greek yogurt", the food appears, + is tapped while the portion counts 100 → 170 g, then Add
+    log(card) {
+      const typed = card.querySelector('.ui-typed'), text = typed.dataset.text;
+      if (reduce) { typed.textContent = text; card.classList.add('found'); countUp(card.querySelector('[data-count]')); return; }
+      later(450, () => {
+        card.classList.add('typing');
+        [...text].forEach((c, i) => setTimeout(() => { typed.textContent += c; }, i * 65));
+        setTimeout(() => card.classList.replace('typing', 'found'), text.length * 65 + 250);
+        setTimeout(() => { card.classList.add('bump'); countUp(card.querySelector('[data-count]')); }, text.length * 65 + 750);
+        setTimeout(() => card.classList.add('added'), text.length * 65 + 2000);
+      });
+    },
+    nut(card) { later(300, () => card.querySelectorAll('[data-count]').forEach(countUp)); },
+    checkin(card) { later(1500, () => card.classList.add('checked')); },
+    settings(card) { later(1100, () => card.querySelector('.ui-toggle').classList.add('on')); },
+  };
+  const uiObserver = new IntersectionObserver(entries => {
+    entries.forEach(en => {
+      if (!en.isIntersecting) return;
+      const card = en.target;
+      uiObserver.unobserve(card);
+      card.classList.add('in');
+      PLAY[card.dataset.ui]?.(card);
+    });
+  }, { threshold: 0.35 });
+
+  /* ---------- FAQ: answers slide open and closed ---------- */
+  document.querySelectorAll('.faq details').forEach(d => {
+    const sum = d.querySelector('summary'), body = d.querySelector('.faq-a');
+    sum.addEventListener('click', e => {
+      if (reduce || !body.animate) return;
+      e.preventDefault();
+      if (d._anim) d._anim.cancel();
+      const opening = !d.open;
+      if (opening) d.open = true;
+      const h = body.scrollHeight;
+      d._anim = body.animate(
+        { height: opening ? ['0px', h + 'px'] : [h + 'px', '0px'], opacity: opening ? [0, 1] : [1, 0] },
+        { duration: opening ? 420 : 320, easing: 'cubic-bezier(.2,.8,.2,1)' });
+      d._anim.onfinish = () => { d._anim = null; if (!opening) d.open = false; };
+    });
+  });
+  document.querySelectorAll('[data-ui]').forEach(c => uiObserver.observe(c));
+
   /* ---------- Background: tone follows the section in view; drawings drift slowly ---------- */
   // How green the background is around each section (0 = black page, 1 = deep green). Eased between section centres.
-  const TONE = { hero: 0, how: 0.25, logging: 0.55, nutrition: 0.9, habits: 0.45, rewards: 1, privacy: 0.3, final: 0.7 };
+  const TONE = { hero: 0, how: 0.25, logging: 0.55, nutrition: 0.9, habits: 0.45, rewards: 1, privacy: 0.3, inside: 0.6, note: 0.1, faq: 0.15, final: 0.7 };
   const toneEl = document.getElementById('bgTone');
   const toneSecs = Object.keys(TONE).map(id => document.getElementById(id));
   const arts = [...document.querySelectorAll('.bg-art')];

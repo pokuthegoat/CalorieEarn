@@ -45,6 +45,9 @@
   <symbol id="i-lock" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="5" y="10.5" width="14" height="9.5" rx="2.5"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5"/></g></symbol>
   <symbol id="i-book" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 5.5A1.5 1.5 0 0 1 6.5 4H19v14H6.5A1.5 1.5 0 0 0 5 19.5z"/><path d="M5 19.5A1.5 1.5 0 0 0 6.5 21H19"/><path d="M9 8h6"/></g></symbol>
   <symbol id="i-user" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8.5" r="3.5"/><path d="M5 19.5c1.2-3.3 3.9-5 7-5s5.8 1.7 7 5"/></g></symbol>
+  <symbol id="i-doc" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3.5H7A1.5 1.5 0 0 0 5.5 5v14A1.5 1.5 0 0 0 7 20.5h10a1.5 1.5 0 0 0 1.5-1.5V8z"/><path d="M14 3.5V8h4.5M9 12.5h6M9 16h6"/></g></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 7h15M9.5 7V4.5h5V7M6.5 7l1 13h9l1-13M10 11v5.5M14 11v5.5"/></g></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="m9.5 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="tick" viewBox="0 0 20 20"><path d="m6 10.5 2.6 2.6L14 7.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
 </svg>
 
@@ -145,6 +148,22 @@
         <h2>Fast meal logging, with quantities you can edit.</h2>
         <div class="m-spot" aria-hidden="true"></div>
         <p class="lead">Search packaged foods by name or brand, scan a barcode or type its number, or take or choose a photo for an estimate. You can always enter a food manually. Then tap a food to adjust it before saving.</p>
+        <!-- App cards: redrawn from the real app; numbers count up when a card comes into view (main.js) -->
+        <div class="ui" data-ui="log">
+          <div class="ui-head"><b>Add food</b><small>Lunch · Today</small></div>
+          <div class="ui-search">
+            <span class="ui-field"><svg><use href="#i-search"/></svg><span class="ui-ph">Search packaged foods…</span><span class="ui-typed" data-text="Greek yogurt"></span></span>
+            <span class="ui-ib"><svg><use href="#i-camera"/></svg></span>
+            <span class="ui-ib"><svg><use href="#i-barcode"/></svg></span>
+          </div>
+          <div class="ui-chips"><span class="on">Search</span><span>Recent</span><span>Saved meals</span></div>
+          <div class="ui-portion">
+            <div class="ui-food"><b>Greek yogurt</b><small>Portion</small></div>
+            <div class="ui-step"><span>−</span><output data-count="100 170">170</output><span>+</span></div>
+            <div class="ui-units"><span class="on">g</span><span>oz</span></div>
+          </div>
+          <span class="ui-btn">Add to Lunch</span>
+        </div>
         <div class="minis two">
           <div class="mini"><span class="mi"><svg><use href="#i-search"/></svg></span><b>Food search</b></div>
           <div class="mini"><span class="mi"><svg><use href="#i-barcode"/></svg></span><b>Barcode scanning</b></div>
@@ -167,6 +186,19 @@
         <h2>Understand your nutrition, day by day.</h2>
         <div class="m-spot" aria-hidden="true"></div>
         <p class="lead">Daily calorie and nutrient summaries show what you ate today. Weekly progress shows your routine, based on what you’ve actually logged, and trends appear after 3 logged days. Prefer a plain food journal? Turn the nutrition numbers off.</p>
+        <div class="ui" data-ui="nut">
+          <div class="ui-head"><b>This portion</b><small>Greek yogurt · 170 g</small></div>
+          <div class="ui-macros">
+            <div><b data-count="0 165">165</b><small>Energy · kcal</small></div>
+            <div><b data-count="0 15.3">15.3</b><small>Protein · g</small></div>
+            <div><b data-count="0 6.8">6.8</b><small>Carbs · g</small></div>
+            <div><b data-count="0 8.5">8.5</b><small>Fat · g</small></div>
+          </div>
+          <div class="ui-week">
+            <div class="ui-week-h"><small>This week</small><b><span data-count="0 4">4</span> of 7 days logged</b></div>
+            <div class="ui-tiles"><i class="on"></i><i class="on"></i><i></i><i class="on"></i><i class="on"></i><i></i><i></i></div>
+          </div>
+        </div>
         <div class="minis three">
           <div class="mini"><span class="mi"><svg><use href="#i-ring"/></svg></span><b>Daily calorie and nutrient summaries</b></div>
           <div class="mini"><span class="mi"><svg><use href="#i-bars"/></svg></span><b>Weekly progress</b></div>
@@ -186,6 +218,14 @@
         <p class="eyebrow">Daily habit</p>
         <h2>Built to make logging a habit.</h2>
         <div class="m-spot" aria-hidden="true"></div>
+        <div class="ui ui-checkin" data-ui="checkin">
+          <div class="ui-head row"><span class="ui-ring"><svg><use href="#tick"/></svg></span><div><b>Daily check-in</b><small>Log or repeat a meal, then check in.</small></div></div>
+          <div class="ui-days">
+            <span class="done">M</span><span class="done">T</span><span>W</span><span class="done">T</span><span class="done">F</span><span>S</span><span class="today">S</span>
+          </div>
+          <div class="ui-note">Any 5 days a week · a fresh week starts Monday</div>
+          <span class="ui-btn"><em>Check in</em><em>Checked in</em></span>
+        </div>
         <div class="minis two">
           <div class="mini"><span class="mi"><svg><use href="#i-repeat"/></svg></span><b>Saved meals, recent foods and repeat logging</b></div>
           <div class="mini"><span class="mi"><svg><use href="#i-clock"/></svg></span><b>History to browse, edit or repeat past meals</b></div>
@@ -211,15 +251,20 @@
           <div class="cmp yes"><span class="cmp-h">Rewarded</span><ul><li>Consistent logging</li><li>Daily check-ins</li></ul></div>
           <div class="cmp no"><span class="cmp-h">Not rewarded</span><ul><li>Eating less</li><li>Losing weight</li><li>Hitting an exact calorie number</li></ul></div>
         </div>
+        <div class="ui" data-ui="rules">
+          <div class="ui-head"><b>How campaigns work</b></div>
+          <div class="ui-rows">
+            <div class="ui-row"><span class="ui-ic"><svg><use href="#i-doc"/></svg></span><div><b>Published rules first</b><small>Each campaign lists its exact daily amount, weekly bonus, dates, timezone and eligibility before you join.</small></div></div>
+            <div class="ui-row"><span class="ui-ic"><svg><use href="#i-cal"/></svg></span><div><b>One award per day</b><small>Check in after logging or reviewing a meal. What or how much you eat never changes the amount.</small></div></div>
+            <div class="ui-row"><span class="ui-ic"><svg><use href="#i-camera"/></svg></span><div><b>Photos don’t count</b><small>Photos never count toward rewards and aren’t proof of what you ate.</small></div></div>
+          </div>
+        </div>
         <ul class="ticks">
           <li>No purchase, deposit or trading required</li>
           <li>No wallet needed to start</li>
           <li>Your diary, check-ins and progress work fully without rewards</li>
           <li>Campaigns need an account. Logging doesn’t.</li>
           <li>A rewards screen shows what you’ve earned and whether a campaign is running</li>
-          <li>Each campaign publishes its daily amount, weekly bonus, dates and eligibility first</li>
-          <li>One award per day. What or how much you eat never changes it</li>
-          <li>Photos never count toward rewards</li>
         </ul>
         <p class="fine">$CalorieEarn rewards are not guaranteed cash earnings, and their value can change.</p>
       </div>
@@ -236,11 +281,102 @@
         <p class="eyebrow">Privacy</p>
         <h2>Your food records stay <em class="hl">private.</em></h2>
         <div class="m-spot" aria-hidden="true"></div>
+        <div class="ui" data-ui="settings">
+          <div class="ui-head"><b>Settings</b></div>
+          <div class="ui-rows">
+            <div class="ui-row"><span class="ui-ic"><svg><use href="#i-user"/></svg></span><div><b>Account</b><small>Optional. Sign in with Apple to back up your diary privately and sync it across devices. Only your Apple account’s private ID is used. No name or email is collected.</small></div></div>
+            <div class="ui-row"><span class="ui-ic"><svg><use href="#i-ring"/></svg></span><div><b>Show nutrition numbers</b><small>Turn off to use the diary as a plain food journal.</small></div><span class="ui-toggle"></span></div>
+            <div class="ui-row"><span class="ui-ic"><svg><use href="#i-download"/></svg></span><div><b>Export diary</b><small>Save a JSON copy of all entries and saved meals.</small></div><svg class="ui-chev"><use href="#i-chev"/></svg></div>
+            <div class="ui-row danger"><span class="ui-ic"><svg><use href="#i-trash"/></svg></span><div><b>Delete all diary data</b><small>Removes everything from this device.</small></div><svg class="ui-chev"><use href="#i-chev"/></svg></div>
+          </div>
+        </div>
         <div class="minis stack">
           <div class="mini row"><span class="mi"><svg><use href="#i-lock"/></svg></span><div><b>Private on your device</b><small>Your diary is stored in the app’s private storage on your device, and the app has no analytics or crash reporting.</small></div></div>
-          <div class="mini row"><span class="mi"><svg><use href="#i-user"/></svg></span><div><b>Optional account</b><small>Sign in with Apple to back up your diary privately and sync it across devices. Only your Apple account’s private ID is used. No name or email is collected.</small></div></div>
-          <div class="mini row"><span class="mi"><svg><use href="#i-download"/></svg></span><div><b>Your data, your call</b><small>Export your diary as a JSON file, or delete all of it from your device.</small></div></div>
           <div class="mini row"><span class="mi"><svg><use href="#i-book"/></svg></span><div><b>Younger users</b><small>Under 18 gets a simple food journal: no calorie numbers, no targets or diet plans, and no reward campaigns.</small></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== INSIDE THE APP (bento) ===== -->
+  <!-- Full width: the 3D phone flies off to the side for this and the statement (PATH in phone3d.js) -->
+  <section class="sec" id="inside">
+    <div class="wrap">
+      <div class="bento-head">
+        <p class="eyebrow">Inside the app</p>
+        <h2>Everything you need to log, nothing you don’t.</h2>
+      </div>
+      <div class="bento" data-ui="bento">
+        <article class="bc bc-big">
+          <div class="bc-txt">
+            <h3>Snap your plate</h3>
+            <p>AI estimates each food and its calories from the photo. You review and edit everything before it’s saved.</p>
+          </div>
+          <div class="bc-ui">
+            <div class="ui-row"><span class="ui-ic"><svg><use href="#i-pencil"/></svg></span><div><b>Labelled and fully editable</b><small>Every estimate is marked, and you can change it.</small></div></div>
+            <div class="ui-row"><span class="ui-ic"><svg><use href="#i-lock"/></svg></span><div><b>Recognised on your iPhone</b><small>Only the food names are looked up on Open Food Facts. The photo never leaves your phone.</small></div></div>
+            <div class="ui-row"><span class="ui-ic"><svg><use href="#i-camera"/></svg></span><div><b>Take a photo or choose one</b><small>Or enter the food manually instead.</small></div></div>
+          </div>
+        </article>
+        <article class="bc">
+          <h3>Scan a barcode</h3>
+          <p>Point at the barcode on the pack, or type the number under it.</p>
+          <div class="bc-ui bc-scan">
+            <div class="scan-frame"><i></i></div>
+            <div class="scan-in"><span>e.g. 3017624010701</span><b>Look up</b></div>
+          </div>
+        </article>
+        <article class="bc">
+          <h3>Saved meals</h3>
+          <p>Save foods you often eat together from any day, then log them in one go.</p>
+          <div class="bc-ui">
+            <div class="ui-chips"><span>Search</span><span>Recent</span><span class="on">Saved meals</span></div>
+          </div>
+        </article>
+        <article class="bc">
+          <h3>History</h3>
+          <p>Browse, edit or repeat past meals.</p>
+          <div class="bc-ui bc-cal"><i class=""></i><i class=""></i><i class=""></i><i class="l"></i><i class="c"></i><i class="c"></i><i class="l"></i><i class="c"></i><i class="c"></i><i class="l"></i><i class="c"></i><i class="c"></i><i class=""></i><i class="c"></i><i class="c"></i><i class="c"></i><i class="c"></i><i class="l"></i><i class="c"></i><i class="c"></i><i class=""></i><i class="c"></i><i class="l"></i><i class="c"></i><i class="c"></i><i class="c"></i><i class=""></i><i class="today"></i></div>
+          <div class="bc-legend"><span><i class="l"></i>Logged</span><span><i class="c"></i>Checked in</span></div>
+        </article>
+        <article class="bc">
+          <h3>Weekly recap</h3>
+          <p>Milestones never reset or get taken away. Missing a day is fine.</p>
+          <div class="bc-ui bc-recap">
+            <div><b>19 Oct – 25 Oct</b><span>6 days logged</span></div>
+            <div><b>12 Oct – 18 Oct</b><span>5 days logged</span></div>
+            <div><b>5 Oct – 11 Oct</b><span>6 days logged</span></div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== STATEMENT ===== -->
+  <section class="sec note" id="note">
+    <div class="wrap">
+      <p class="eyebrow">What CalorieEarn is</p>
+      <p class="lead statement">CalorieEarn is a food diary first. Log your meals, understand your nutrition and build a daily habit. Rewards recognise showing up, not eating less, losing weight or hitting a number. Your diary stays private on your phone, and it works fully without rewards.</p>
+    </div>
+  </section>
+
+  <!-- ===== FAQ ===== -->
+  <section class="sec" id="faq">
+    <div class="wrap">
+      <div class="col">
+        <p class="eyebrow">FAQ</p>
+        <h2>Questions, answered.</h2>
+        <div class="faq" data-ui="faq">
+          <details><summary>Do I need to buy anything to earn?</summary><div class="faq-a"><p>No. No purchase, deposit or trading is required.</p></div></details>
+          <details><summary>Do I need a wallet?</summary><div class="faq-a"><p>No wallet is needed to start. Your diary, check-ins and progress work fully without rewards.</p></div></details>
+          <details><summary>What gets rewarded?</summary><div class="faq-a"><p>Consistent logging and daily check-ins, under each campaign’s published rules. Not eating less, losing weight or hitting an exact calorie number. One award per day, and what or how much you eat never changes the amount.</p></div></details>
+          <details><summary>Do I need an account?</summary><div class="faq-a"><p>Not to log. Campaigns need an account: Sign in with Apple. Only your Apple account’s private ID is used, and no name or email is collected.</p></div></details>
+          <details><summary>Where is my food diary stored?</summary><div class="faq-a"><p>In the app’s private storage on your device. The app has no analytics or crash reporting. You can export your diary as a JSON file, or delete all of it.</p></div></details>
+          <details><summary>How do photo estimates work?</summary><div class="faq-a"><p>Your iPhone recognises the food, and only the food names are looked up on Open Food Facts. The photo never leaves your phone. Estimates can be wrong, you can edit everything before saving, and photos never count toward rewards.</p></div></details>
+          <details><summary>What if I miss a day?</summary><div class="faq-a"><p>That’s fine. Any 5 days a week counts, a fresh week starts Monday, and milestones never reset.</p></div></details>
+          <details><summary>Can under-18s use CalorieEarn?</summary><div class="faq-a"><p>Yes, with a parent or guardian’s permission. Under 18 gets a simple food journal: no calorie numbers, no targets or diet plans, and no reward campaigns.</p></div></details>
+          <details><summary>Are $CalorieEarn rewards cash?</summary><div class="faq-a"><p>No. $CalorieEarn rewards are not guaranteed cash earnings, and their value can change.</p></div></details>
+          <details><summary>How do I get the app?</summary><div class="faq-a"><p>On iPhone, join the TestFlight. On Android, download the APK. Both buttons are at the top and bottom of this page.</p></div></details>
         </div>
       </div>
     </div>

@@ -525,7 +525,7 @@ const HOW_STEPS = [
 ];
 
 /* ---------- which screen, and switching ---------- */
-const SECTIONS = ['hero', 'how', 'logging', 'nutrition', 'habits', 'rewards', 'privacy', 'final']
+const SECTIONS = ['hero', 'how', 'logging', 'nutrition', 'habits', 'rewards', 'privacy', 'faq', 'final']
   .map((id) => document.getElementById(id));
 
 // Section tops in page pixels, measured on layout changes, so picking the screen never reads layout per frame.
@@ -556,6 +556,7 @@ const DRAW = {
   habits: (t) => history(t),
   rewards: (t) => rewards(t),
   privacy: (t) => settings(null, { numbers: 1 - span(t, 0.7, 1.0) }),
+  faq: (t) => today(t),
   final,
 };
 // How long each screen keeps animating after it appears (s). After that it's a still image.
@@ -581,7 +582,7 @@ function drawScreen(key, t) {
 //   screen → sheet: the sheet slides up over the dimming screen; sheet → screen: it slides back down off it
 // The green background and status bar stay still underneath.
 const SWITCH = 0.45;
-const ORDER = ['hero', 'how0', 'how1', 'how2', 'how3', 'logging', 'nutrition', 'habits', 'rewards', 'privacy', 'final'];
+const ORDER = ['hero', 'how0', 'how1', 'how2', 'how3', 'logging', 'nutrition', 'habits', 'rewards', 'privacy', 'faq', 'final'];
 // Is it showing a sheet right now? (Log and Logging start as Today and slide their sheet up themselves.)
 function isSheet(key, t) {
   if (key === 'how1' || key === 'privacy') return true;
