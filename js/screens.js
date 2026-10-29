@@ -245,34 +245,53 @@ function calendar(top, { dot = null } = {}) {
 /* ---------- screens ---------- */
 // t = seconds since it came on screen (null = no intro); how-it-works steps take lp = scroll progress 0..1 in that step.
 
-function today(t = null, { addPress = 0 } = {}) {
+function today(t = null) {
   greenBg();
-  rise(t, 0, () => header('Today', TODAY_LONG, { chevrons: true }));
+  rise(t, 0, () => {
+    // Today's header: title higher than other screens, day arrows + account in one row
+    text('Today', 30, 208, 60, C.text, 700);
+    text(TODAY_LONG, 30, 252, 24, 'rgba(255,255,255,.78)');
+    circle(460, 212, 38, 'rgba(150,215,135,.3)', 'rgba(255,255,255,.2)');
+    icon('chevL', 460, 212, 22, C.acc, 3.5);
+    circle(555, 212, 38, 'rgba(150,215,135,.12)', 'rgba(255,255,255,.08)');
+    icon('chevR', 555, 212, 22, 'rgba(169,228,140,.45)', 3.5);
+    circle(650, 212, 38, 'rgba(150,215,135,.3)', 'rgba(255,255,255,.2)');
+    icon('person', 650, 212, 30, C.acc, 3);
+  });
   rise(t, 1, () => {
-    glass(30, 367, 660, 493);
-    circle(360, 473, 57, 'rgba(255,255,255,.1)');
-    icon('fork', 360, 473, 44, C.acc, 3);
-    text('Nothing logged yet today', 360, 588, 30, C.text, 600, 'center');
-    lines(['Add your first meal. Search, scan a barcode, or', 'type it in.'], 360, 643, 32, 23, C.mute, 400, 'center');
-    const s = press(addPress), bw = 604 * s, bh = 92 * s;
-    box(360 - bw / 2, 764 - bh / 2, bw, bh, bh / 2, C.acc);
-    icon('plus', 290, 764, 22, C.accText, 3);
-    text('Add food', 322, 773, 26, C.accText, 600);
+    // calorie ring: ticked outer band, dark centre
+    circle(360, 510, 222, 'rgba(255,255,255,.03)', 'rgba(255,255,255,.07)');
+    ctx.save(); ctx.strokeStyle = 'rgba(255,255,255,.16)'; ctx.lineWidth = 5; ctx.lineCap = 'round';
+    for (let i = 0; i < 72; i++) {
+      const a = (i / 72) * Math.PI * 2, c = Math.cos(a), sn = Math.sin(a);
+      ctx.beginPath(); ctx.moveTo(360 + c * 188, 510 + sn * 188); ctx.lineTo(360 + c * 212, 510 + sn * 212); ctx.stroke();
+    }
+    ctx.restore();
+    circle(360, 510, 170, 'rgba(28,34,28,.9)', 'rgba(255,255,255,.07)');
+    text('0', 360, 527, 84, C.text, 700, 'center');
+    text('kcal logged', 360, 572, 23, C.acc, 600, 'center');
   });
   rise(t, 2, () => {
-    glass(30, 883, 660, 455, 40, 'rgba(150,205,135,.13)');
-    circle(100, 955, 35, 'rgba(0,0,0,.12)', 'rgba(255,255,255,.07)');
-    text('Daily check-in', 165, 950, 28, C.text, 600);
-    text('Log or repeat a meal, then check in.', 165, 984, 21, C.mute);
-    [100, 186, 272, 358, 445, 531, 618].forEach((x, i) => {
-      text('MTWTFSS'[i], x, 1050, 20, i === 6 ? C.text : C.mute, i === 6 ? 600 : 500, 'center');
-      circle(x, 1092, 27, 'rgba(0,0,0,.14)', i === 6 ? C.acc : 'rgba(255,255,255,.05)', i === 6 ? 3 : 2);
+    [['Search', 'search', 135], ['Scan', 'barcode', 361], ['Photo', 'camera', 586]].forEach(([label, ic, cx]) => {
+      glass(cx - 104, 775, 208, 170, 36, 'rgba(150,205,135,.12)');
+      icon(ic, cx, 834, 36, C.acc, 3);
+      text(label, cx, 902, 28, C.text, 700, 'center');
     });
-    box(58, 1148, 604, 42, 21, 'rgba(255,255,255,.06)');
-    circle(87, 1169, 7, null, C.mute, 2);
-    text('Any 5 days a week · a fresh week starts Monday', 106, 1177, 20, C.mute, 500);
-    box(58, 1220, 604, 90, 45, 'rgba(255,255,255,.06)', 'rgba(255,255,255,.05)');
-    text('Add food first', 360, 1275, 27, C.dim, 500, 'center');
+    glass(30, 970, 660, 155, 36, 'rgba(150,205,135,.10)');
+    circle(97, 1048, 37, 'rgba(255,255,255,.08)');
+    icon('fork', 97, 1048, 34, C.acc, 2.6);
+    text('Nothing logged yet today', 163, 1028, 28, C.text, 700);
+    lines(['Search, scan a barcode or snap a photo', 'above.'], 163, 1063, 29, 21, C.mute);
+  });
+  rise(t, 3, () => {
+    glass(30, 1150, 660, 400, 40, 'rgba(150,205,135,.10)');
+    circle(103, 1220, 35, 'rgba(0,0,0,.12)', 'rgba(255,255,255,.07)');
+    text('Daily check-in', 170, 1216, 28, C.text, 700);
+    text('Log or repeat a meal, then check in.', 170, 1251, 21, C.mute);
+    [100, 186, 272, 358, 445, 531, 618].forEach((x, i) => {
+      text('MTWTFSS'[i], x, 1318, 20, i === 6 ? C.text : C.mute, i === 6 ? 600 : 500, 'center');
+      circle(x, 1360, 27, 'rgba(0,0,0,.14)', i === 6 ? C.acc : 'rgba(255,255,255,.05)', i === 6 ? 3 : 2);
+    });
   });
   tabBar(0);
 }

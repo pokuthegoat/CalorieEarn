@@ -66,7 +66,7 @@
     });
   });
 
-  /* ---------- Contract address button (closing section): shows the full address, copies on click ---------- */
+  /* ---------- Contract address buttons (hero + closing section): shows the full address, copies on click ---------- */
   const CA = '0000000000000000000000000000000000000000pump'; // placeholder until the real address exists
   document.querySelectorAll('.ca').forEach(btn => {
     const v = btn.querySelector('.ca-v');
