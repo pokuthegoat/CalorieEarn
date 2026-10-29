@@ -137,11 +137,6 @@ main,.foot{position:relative;z-index:1}
 .hero .col{max-width:640px}
 .hero h1{margin:24px 0 28px}
 .hero .lead{max-width:30em;margin-bottom:40px}
-.status-pill{display:inline-flex;align-items:center;gap:10px;height:32px;padding:0 14px;border-radius:999px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);font-size:14px;font-weight:400;letter-spacing:-.02em;color:var(--muted)}
-.status-pill b{position:relative;width:7px;height:7px;border-radius:50%;background:var(--accent)}
-/* ping ring: scale + opacity only (compositor), not an animated box-shadow (repaints every frame) */
-.status-pill b::after{content:"";position:absolute;inset:0;border-radius:50%;background:var(--accent);animation:ping 2.4s var(--ease) infinite}
-@keyframes ping{0%{transform:scale(1);opacity:.55}70%,100%{transform:scale(3.4);opacity:0}}
 
 /* ==========================================================
    SECTIONS — text on one side, the phone flies on the other
@@ -248,10 +243,10 @@ body{background:transparent}
 .intro-ring{position:relative;width:120px;height:120px;display:flex;align-items:center;justify-content:center}
 .intro-ring svg{position:absolute;inset:0;width:120px;height:120px;transform:rotate(-90deg)}
 .intro-ring circle{fill:none;stroke-width:2.5}
-.intro-ring .ring-track{stroke:var(--line)}
-.intro-fill{stroke:var(--accent);stroke-linecap:round;stroke-dasharray:351.86;stroke-dashoffset:351.86}
+.intro-ring .ring-track{stroke:rgba(255,255,255,.12)}
+.intro-fill{stroke:#fff;stroke-linecap:round;stroke-dasharray:351.86;stroke-dashoffset:351.86}
 .intro-ring img{width:72px;height:72px;border-radius:50%}
-.intro-ring .intro-mark{position:static;width:64px;height:64px;transform:none;fill:var(--accent)}
+.intro-ring .intro-mark{position:static;width:64px;height:64px;transform:none;fill:#fff}
 html.intro-on,html.intro-on body{overflow:hidden}
 
 /* ---------- Final: the actions you can actually take right now ---------- */
